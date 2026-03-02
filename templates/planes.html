@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="box">
+  <h2>Planes de suscripción</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Plan</th>
+        <th>Precio anual</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Básico</td>
+        <td>$2,500</td>
+        <td>Viajes limitados por día.</td>
+        <td><button type="button">Elegir</button></td>
+      </tr>
+      <tr>
+        <td>Estudiante</td>
+        <td>$1,800</td>
+        <td>Descuento para estudiantes.</td>
+        <td><button type="button">Elegir</button></td>
+      </tr>
+      <tr>
+        <td>Ilimitado</td>
+        <td>$3,600</td>
+        <td>Viajes sin límite diario.</td>
+        <td><button type="button">Elegir</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

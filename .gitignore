@@ -1,0 +1,5 @@
+app_transporte/
+__pycache__/
+*.pyc
+.DS_Store
+Plan de proyecto.pdf

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo if titulo else "Sistema Transporte" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Sistema de Suscripciones de Transporte</h1>
+    <div class="small">Demo fase 1: solo vistas</div>
+    <nav class="nav">
+      <a href="{{ url_for('inicio') }}">Inicio</a>
+      <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('registro') }}">Registro</a>
+      <a href="{{ url_for('panel_usuario') }}">Panel Usuario</a>
+      <a href="{{ url_for('planes') }}">Planes</a>
+      <a href="{{ url_for('validar_viaje') }}">Validar Viaje</a>
+      <a href="{{ url_for('admin') }}">Panel Admin</a>
+      <a href="{{ url_for('reportes') }}">Reportes</a>
+    </nav>
+  </header>
+  <main>
+    {% block contenido %}{% endblock %}
+  </main>
+</body>
+</html>
