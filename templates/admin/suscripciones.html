@@ -1,0 +1,68 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Gestion de suscripciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Plan</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>100</td>
+          <td>Demo Usuario</td>
+          <td>Estudiante</td>
+          <td>01/01/2026</td>
+          <td>31/12/2026</td>
+          <td>activa</td>
+        </tr>
+        <tr>
+          <td>101</td>
+          <td>Usuario Norte</td>
+          <td>Basico</td>
+          <td>15/02/2026</td>
+          <td>14/02/2027</td>
+          <td>pendiente</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box">
+    <h3>Formulario CRUD</h3>
+    <form>
+      <label>ID de usuario</label>
+      <input type="text" placeholder="1">
+
+      <label>Plan</label>
+      <select>
+        <option>Basico</option>
+        <option>Estudiante</option>
+        <option>Ilimitado</option>
+      </select>
+
+      <label>Fecha de inicio</label>
+      <input type="text" placeholder="2026-01-01">
+
+      <label>Estado</label>
+      <select>
+        <option>activa</option>
+        <option>pendiente</option>
+        <option>cancelada</option>
+      </select>
+
+      <div class="actions-inline">
+        <button class="admin-button" type="button">Crear</button>
+        <button class="admin-button" type="button">Actualizar</button>
+        <button class="admin-button" type="button">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

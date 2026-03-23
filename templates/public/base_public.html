@@ -7,18 +7,21 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-  <header>
-    <h1>Sistema de Suscripciones de Transporte</h1>
-    <div class="small">Demo fase 1: solo vistas</div>
+  <header class="site-header">
+    <div class="header-row">
+      <div>
+        <h1>Sistema de Suscripciones de Transporte</h1>
+        <div class="header-note">Area publica para usuarios finales</div>
+      </div>
+      <a class="admin-link" href="{{ url_for('admin') }}">Ir a administracion</a>
+    </div>
     <nav class="nav">
       <a href="{{ url_for('inicio') }}">Inicio</a>
       <a href="{{ url_for('login') }}">Login</a>
       <a href="{{ url_for('registro') }}">Registro</a>
-      <a href="{{ url_for('panel_usuario') }}">Panel Usuario</a>
       <a href="{{ url_for('planes') }}">Planes</a>
-      <a href="{{ url_for('validar_viaje') }}">Validar Viaje</a>
-      <a href="{{ url_for('admin') }}">Panel Admin</a>
-      <a href="{{ url_for('reportes') }}">Reportes</a>
+      <a href="{{ url_for('panel_usuario') }}">Mi panel</a>
+      <a href="{{ url_for('validar_viaje') }}">Validar viaje</a>
     </nav>
   </header>
   <main>

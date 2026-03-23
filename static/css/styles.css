@@ -1,64 +1,190 @@
+:root {
+  --bg: #ececec;
+  --surface: #ffffff;
+  --border: #b9b9b9;
+  --text: #1a1a1a;
+  --muted: #5f5f5f;
+  --public-main: #1d4ed8;
+  --public-soft: #dbe7ff;
+  --admin-main: #7c2d12;
+  --admin-soft: #f8ddd2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  background: #f3f3f3;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
 }
 
-header {
-  background: #1e1e1e;
-  color: white;
-  padding: 10px;
+h1,
+h2,
+h3,
+p,
+ul {
+  margin-top: 0;
 }
 
-h1, h2 {
-  margin: 0 0 10px 0;
+a {
+  color: inherit;
+}
+
+.site-header,
+.admin-header {
+  color: #fff;
+  padding: 14px 16px;
+}
+
+.site-header {
+  background: linear-gradient(90deg, #123a8f, #2563eb);
+}
+
+.admin-header {
+  background: linear-gradient(90deg, #5b1f0d, #9a3412);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.header-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .nav a {
   text-decoration: none;
-  background: #ececec;
-  color: #111;
-  padding: 5px 8px;
-  border: 1px solid #bbb;
-  border-radius: 3px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
   font-size: 14px;
 }
 
 .nav a:hover {
-  background: #ddd;
+  background: rgba(255, 255, 255, 0.24);
 }
 
 main {
-  padding: 12px;
+  padding: 14px;
+}
+
+.page-title {
+  margin-bottom: 14px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
 }
 
 .box {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 12px;
-  margin-bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
 }
 
-input, select, button {
+.hero {
+  background: linear-gradient(180deg, #ffffff, #eaf1ff);
+}
+
+.admin-hero {
+  background: linear-gradient(180deg, #fff8f4, #f8ddd2);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.stat-card {
+  background: #f7f7f7;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.box ul {
+  padding-left: 18px;
+  margin-bottom: 0;
+}
+
+form {
+  margin: 0;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+input,
+select,
+button,
+textarea {
   width: 100%;
   padding: 8px;
-  margin: 4px 0 10px 0;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  box-sizing: border-box;
+  margin: 0 0 10px 0;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
 }
 
 button {
-  background: #c7d8ff;
   cursor: pointer;
+  background: var(--public-soft);
+}
+
+.admin-button {
+  background: var(--admin-soft);
+}
+
+.actions-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actions-inline button {
+  width: auto;
+  margin-bottom: 0;
 }
 
 table {
@@ -66,14 +192,52 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
-  border: 1px solid #bbb;
-  padding: 6px;
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 8px;
   text-align: left;
   font-size: 14px;
+  vertical-align: top;
 }
 
-.small {
+th {
+  background: #f0f0f0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
   font-size: 12px;
-  color: #444;
+  background: #f6f6f6;
+}
+
+.public-link,
+.admin-link {
+  display: inline-block;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.public-link {
+  color: var(--public-main);
+}
+
+.admin-link {
+  color: var(--admin-main);
+}
+
+@media (max-width: 640px) {
+  main {
+    padding: 10px;
+  }
+
+  .header-row {
+    flex-direction: column;
+  }
 }

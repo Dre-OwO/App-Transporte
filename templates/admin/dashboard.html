@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="box admin-hero">
+  <h2 class="page-title">Dashboard administrativo</h2>
+  <p>Vista general del sistema. Sirve como entrada al CRUD de usuarios, planes y suscripciones.</p>
+</section>
+
+<section class="stats-grid">
+  <div class="stat-card">
+    <strong>1350</strong>
+    Usuarios registrados
+  </div>
+  <div class="stat-card">
+    <strong>987</strong>
+    Suscripciones activas
+  </div>
+  <div class="stat-card">
+    <strong>12</strong>
+    Planes cargados
+  </div>
+  <div class="stat-card">
+    <strong>4120</strong>
+    Validaciones hoy
+  </div>
+</section>
+
+<section class="content-grid">
+  <div class="box">
+    <h3>Modulos del admin</h3>
+    <ul>
+      <li>Usuarios: alta, consulta, edicion y baja.</li>
+      <li>Planes: alta y mantenimiento de catalogo.</li>
+      <li>Suscripciones: seguimiento de estados y fechas.</li>
+      <li>Reportes: consultas basicas del sistema.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h3>Pendientes tecnicos</h3>
+    <ul>
+      <li>Conectar autenticacion de administrador.</li>
+      <li>Conectar base de datos con SQLAlchemy.</li>
+      <li>Activar CRUD real en cada modulo.</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

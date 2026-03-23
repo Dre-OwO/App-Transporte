@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Gestion de usuarios</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Demo Usuario</td>
+          <td>demo@correo.com</td>
+          <td>cliente</td>
+          <td>activo</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Admin Demo</td>
+          <td>admin@correo.com</td>
+          <td>admin</td>
+          <td>activo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box">
+    <h3>Formulario CRUD</h3>
+    <form>
+      <label>Nombre</label>
+      <input type="text" placeholder="Nombre del usuario">
+
+      <label>Correo</label>
+      <input type="email" placeholder="correo@ejemplo.com">
+
+      <label>Rol</label>
+      <select>
+        <option>cliente</option>
+        <option>admin</option>
+      </select>
+
+      <label>Estado</label>
+      <select>
+        <option>activo</option>
+        <option>inactivo</option>
+      </select>
+
+      <div class="actions-inline">
+        <button class="admin-button" type="button">Crear</button>
+        <button class="admin-button" type="button">Actualizar</button>
+        <button class="admin-button" type="button">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

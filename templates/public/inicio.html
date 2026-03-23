@@ -1,0 +1,34 @@
+{% extends "public/base_public.html" %}
+{% block contenido %}
+<section class="box hero">
+  <h2 class="page-title">Inicio</h2>
+  <p>Demo sencilla del sistema de suscripcion anual para transporte publico.</p>
+  <p>En esta vista se separa lo que ve el usuario de lo que gestionara el administrador.</p>
+  <div class="actions-inline">
+    <a class="public-link" href="{{ url_for('registro') }}">Crear cuenta</a>
+    <a class="public-link" href="{{ url_for('planes') }}">Ver planes</a>
+    <a class="admin-link" href="{{ url_for('admin') }}">Entrar al backoffice</a>
+  </div>
+</section>
+
+<section class="content-grid">
+  <div class="box">
+    <h3>Flujo de usuario</h3>
+    <ul>
+      <li>Registrarse o iniciar sesion.</li>
+      <li>Consultar planes disponibles.</li>
+      <li>Revisar su suscripcion.</li>
+      <li>Validar un viaje de forma visual.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h3>Flujo de admin</h3>
+    <ul>
+      <li>Gestionar usuarios.</li>
+      <li>Administrar planes.</li>
+      <li>Revisar suscripciones.</li>
+      <li>Consultar reportes basicos.</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

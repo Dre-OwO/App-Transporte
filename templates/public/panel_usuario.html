@@ -1,0 +1,37 @@
+{% extends "public/base_public.html" %}
+{% block contenido %}
+<section class="box">
+  <h2 class="page-title">Panel de usuario</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <strong>Activa</strong>
+      Estado de suscripcion
+    </div>
+    <div class="stat-card">
+      <strong>31/12/2026</strong>
+      Vencimiento estimado
+    </div>
+    <div class="stat-card">
+      <strong>18</strong>
+      Viajes del mes
+    </div>
+  </div>
+</section>
+
+<section class="content-grid">
+  <div class="box">
+    <h3>Datos del usuario</h3>
+    <p><strong>Nombre:</strong> Demo Usuario</p>
+    <p><strong>Correo:</strong> demo@correo.com</p>
+    <p><strong>Plan:</strong> Estudiante</p>
+  </div>
+  <div class="box">
+    <h3>Acciones rapidas</h3>
+    <div class="actions-inline">
+      <button type="button">Renovar plan</button>
+      <button type="button">Ver historial</button>
+      <button type="button">Descargar comprobante</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

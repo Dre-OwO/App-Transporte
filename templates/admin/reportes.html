@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="box admin-hero">
+  <h2 class="page-title">Reportes</h2>
+  <p>Vista administrativa para revisar datos generales del sistema. Sigue siendo estatica, pero ya esta en el area correcta.</p>
+</section>
+
+<section class="stats-grid">
+  <div class="stat-card">
+    <strong>120</strong>
+    Suscripciones nuevas del mes
+  </div>
+  <div class="stat-card">
+    <strong>987</strong>
+    Usuarios activos
+  </div>
+  <div class="stat-card">
+    <strong>3.7</strong>
+    Uso promedio diario
+  </div>
+</section>
+
+<section class="content-grid">
+  <div class="box">
+    <h3>Resumen mensual</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Metrica</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Altas de usuarios</td>
+          <td>85</td>
+        </tr>
+        <tr>
+          <td>Renovaciones</td>
+          <td>64</td>
+        </tr>
+        <tr>
+          <td>Validaciones registradas</td>
+          <td>25,400</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box">
+    <h3>Uso futuro</h3>
+    <ul>
+      <li>Consulta por rango de fechas.</li>
+      <li>Filtro por plan o por ruta.</li>
+      <li>Exportacion basica de reportes.</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

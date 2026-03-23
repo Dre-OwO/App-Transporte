@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Gestion de planes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Plan</th>
+          <th>Precio</th>
+          <th>Limite diario</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Basico</td>
+          <td>$2,500</td>
+          <td>2 viajes</td>
+          <td>activo</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Estudiante</td>
+          <td>$1,800</td>
+          <td>4 viajes</td>
+          <td>activo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box">
+    <h3>Formulario CRUD</h3>
+    <form>
+      <label>Nombre del plan</label>
+      <input type="text" placeholder="Plan nuevo">
+
+      <label>Descripcion</label>
+      <textarea placeholder="Descripcion corta del plan"></textarea>
+
+      <label>Precio anual</label>
+      <input type="text" placeholder="$0.00">
+
+      <label>Estado</label>
+      <select>
+        <option>activo</option>
+        <option>inactivo</option>
+      </select>
+
+      <div class="actions-inline">
+        <button class="admin-button" type="button">Crear</button>
+        <button class="admin-button" type="button">Actualizar</button>
+        <button class="admin-button" type="button">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
