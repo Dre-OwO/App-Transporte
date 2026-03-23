@@ -3,56 +3,78 @@
 <section class="content-grid">
   <div class="box">
     <h2 class="page-title">Gestion de planes</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Plan</th>
-          <th>Precio</th>
-          <th>Limite diario</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Basico</td>
-          <td>$2,500</td>
-          <td>2 viajes</td>
-          <td>activo</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Estudiante</td>
-          <td>$1,800</td>
-          <td>4 viajes</td>
-          <td>activo</td>
-        </tr>
-      </tbody>
-    </table>
+    {% if db_warning %}
+      <div class="flash flash-error">{{ db_warning }}</div>
+    {% endif %}
+
+    {% if planes %}
+      <table>
+        <thead>
+          <tr>
+            <th>ObjectId</th>
+            <th>Plan</th>
+            <th>Precio</th>
+            <th>Limite diario</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for plan in planes %}
+            <tr>
+              <td>{{ plan._id }}</td>
+              <td>{{ plan.nombre }}</td>
+              <td>${{ plan.precio_anual }}</td>
+              <td>{{ plan.limite_viajes_diarios }} viajes</td>
+              <td>{% if plan.activo %}activo{% else %}inactivo{% endif %}</td>
+              <td>
+                <div class="table-actions">
+                  <a class="admin-link" href="{{ url_for('admin_planes', edit=plan._id) }}">Editar</a>
+                  <form method="post" class="inline-form">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="document_id" value="{{ plan._id }}">
+                    <button class="admin-button" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No hay planes cargados en MongoDB.</p>
+    {% endif %}
   </div>
+
   <div class="box">
-    <h3>Formulario CRUD</h3>
-    <form>
+    <h3>{% if form_data.document_id %}Editar plan{% else %}Crear plan{% endif %}</h3>
+    <form method="post">
+      <input type="hidden" name="document_id" value="{{ form_data.document_id }}">
+
       <label>Nombre del plan</label>
-      <input type="text" placeholder="Plan nuevo">
+      <input name="nombre" type="text" value="{{ form_data.nombre }}" placeholder="Plan nuevo">
 
       <label>Descripcion</label>
-      <textarea placeholder="Descripcion corta del plan"></textarea>
+      <textarea name="descripcion" placeholder="Descripcion corta del plan">{{ form_data.descripcion }}</textarea>
 
       <label>Precio anual</label>
-      <input type="text" placeholder="$0.00">
+      <input name="precio_anual" type="text" value="{{ form_data.precio_anual }}" placeholder="2500">
+
+      <label>Limite de viajes por dia</label>
+      <input name="limite_viajes_diarios" type="text" value="{{ form_data.limite_viajes_diarios }}" placeholder="4">
 
       <label>Estado</label>
-      <select>
-        <option>activo</option>
-        <option>inactivo</option>
+      <select name="activo">
+        <option value="true" {% if form_data.activo == "true" %}selected{% endif %}>activo</option>
+        <option value="false" {% if form_data.activo == "false" %}selected{% endif %}>inactivo</option>
       </select>
 
       <div class="actions-inline">
-        <button class="admin-button" type="button">Crear</button>
-        <button class="admin-button" type="button">Actualizar</button>
-        <button class="admin-button" type="button">Eliminar</button>
+        <button class="admin-button" name="action" value="create" type="submit">Crear</button>
+        <button class="admin-button" name="action" value="update" type="submit">Actualizar</button>
+        {% if form_data.document_id %}
+          <a class="button-link" href="{{ url_for('admin_planes') }}">Limpiar formulario</a>
+        {% endif %}
       </div>
     </form>
   </div>

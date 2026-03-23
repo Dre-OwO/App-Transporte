@@ -2,26 +2,30 @@
 {% block contenido %}
 <section class="content-grid">
   <div class="box">
-    <h2 class="page-title">Registro</h2>
-    <form>
+    <h2 class="page-title">Registro de usuario</h2>
+    <form method="post">
       <label>Nombre completo</label>
-      <input type="text" placeholder="Nombre Apellido">
+      <input name="nombre" type="text" value="{{ form_data.nombre }}" placeholder="Nombre Apellido">
 
       <label>Correo</label>
-      <input type="email" placeholder="correo@ejemplo.com">
+      <input name="correo" type="email" value="{{ form_data.correo }}" placeholder="correo@ejemplo.com">
 
       <label>Telefono</label>
-      <input type="text" placeholder="33xxxxxxx">
+      <input name="telefono" type="text" value="{{ form_data.telefono }}" placeholder="33xxxxxxx">
 
       <label>Contrasena</label>
-      <input type="password" placeholder="********">
+      <input name="password" type="password" placeholder="********">
 
-      <button type="button">Registrarse</button>
+      <button type="submit">Crear usuario</button>
     </form>
   </div>
   <div class="box">
-    <h3>Nota de esta fase</h3>
-    <p>El formulario aun no guarda datos. Solo deja lista la pantalla para conectarla a la base de datos despues.</p>
+    <h3>Que hace esta vista</h3>
+    <ul>
+      <li>Crea documentos reales en la coleccion <code>usuarios</code>.</li>
+      <li>Registra el usuario con rol <code>cliente</code>.</li>
+      <li>Deja el correo listo para consultarlo desde el panel de usuario.</li>
+    </ul>
   </div>
 </section>
 {% endblock %}

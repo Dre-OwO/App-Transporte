@@ -2,35 +2,33 @@
 {% block contenido %}
 <section class="box">
   <h2 class="page-title">Planes disponibles</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Plan</th>
-        <th>Precio anual</th>
-        <th>Descripcion</th>
-        <th>Accion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Basico</td>
-        <td>$2,500</td>
-        <td>Viajes limitados por dia.</td>
-        <td><button type="button">Elegir</button></td>
-      </tr>
-      <tr>
-        <td>Estudiante</td>
-        <td>$1,800</td>
-        <td>Opcion con descuento.</td>
-        <td><button type="button">Elegir</button></td>
-      </tr>
-      <tr>
-        <td>Ilimitado</td>
-        <td>$3,600</td>
-        <td>Uso intensivo del sistema.</td>
-        <td><button type="button">Elegir</button></td>
-      </tr>
-    </tbody>
-  </table>
+  {% if db_warning %}
+    <div class="flash flash-error">{{ db_warning }}</div>
+  {% endif %}
+
+  {% if planes %}
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Precio anual</th>
+          <th>Limite diario</th>
+          <th>Descripcion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in planes %}
+          <tr>
+            <td>{{ plan.nombre }}</td>
+            <td>${{ plan.precio_anual }}</td>
+            <td>{{ plan.limite_viajes_diarios }} viajes</td>
+            <td>{{ plan.descripcion or "Sin descripcion" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-state">No hay planes activos en este momento. Puedes crearlos desde el area administrativa.</p>
+  {% endif %}
 </section>
 {% endblock %}

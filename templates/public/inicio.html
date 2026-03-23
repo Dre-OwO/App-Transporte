@@ -2,32 +2,32 @@
 {% block contenido %}
 <section class="box hero">
   <h2 class="page-title">Inicio</h2>
-  <p>Demo sencilla del sistema de suscripcion anual para transporte publico.</p>
-  <p>En esta vista se separa lo que ve el usuario de lo que gestionara el administrador.</p>
+  <p>Aplicacion Flask conectada a una base NoSQL pensada para gestionar usuarios, planes, suscripciones y validaciones de viaje.</p>
+  <p>La administracion ya quedo separada para que el CRUD viva en un area distinta a la vista del usuario.</p>
   <div class="actions-inline">
-    <a class="public-link" href="{{ url_for('registro') }}">Crear cuenta</a>
+    <a class="public-link" href="{{ url_for('registro') }}">Registrar usuario</a>
     <a class="public-link" href="{{ url_for('planes') }}">Ver planes</a>
-    <a class="admin-link" href="{{ url_for('admin') }}">Entrar al backoffice</a>
+    <a class="admin-link" href="{{ url_for('admin') }}">Abrir backoffice</a>
   </div>
 </section>
 
 <section class="content-grid">
   <div class="box">
-    <h3>Flujo de usuario</h3>
+    <h3>Usuario final</h3>
     <ul>
-      <li>Registrarse o iniciar sesion.</li>
-      <li>Consultar planes disponibles.</li>
-      <li>Revisar su suscripcion.</li>
-      <li>Validar un viaje de forma visual.</li>
+      <li>Registrarse desde la vista publica.</li>
+      <li>Consultar planes vigentes desde MongoDB.</li>
+      <li>Buscar su panel por correo o ObjectId.</li>
+      <li>Registrar validaciones de viaje.</li>
     </ul>
   </div>
   <div class="box">
-    <h3>Flujo de admin</h3>
+    <h3>Administrador</h3>
     <ul>
-      <li>Gestionar usuarios.</li>
-      <li>Administrar planes.</li>
-      <li>Revisar suscripciones.</li>
-      <li>Consultar reportes basicos.</li>
+      <li>CRUD de usuarios.</li>
+      <li>CRUD de planes.</li>
+      <li>CRUD de suscripciones.</li>
+      <li>Reportes basicos y actividad reciente.</li>
     </ul>
   </div>
 </section>

@@ -3,59 +3,84 @@
 <section class="content-grid">
   <div class="box">
     <h2 class="page-title">Gestion de usuarios</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Rol</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Demo Usuario</td>
-          <td>demo@correo.com</td>
-          <td>cliente</td>
-          <td>activo</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Admin Demo</td>
-          <td>admin@correo.com</td>
-          <td>admin</td>
-          <td>activo</td>
-        </tr>
-      </tbody>
-    </table>
+    {% if db_warning %}
+      <div class="flash flash-error">{{ db_warning }}</div>
+    {% endif %}
+
+    {% if usuarios %}
+      <table>
+        <thead>
+          <tr>
+            <th>ObjectId</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios %}
+            <tr>
+              <td>{{ usuario._id }}</td>
+              <td>{{ usuario.nombre }}</td>
+              <td>{{ usuario.correo }}</td>
+              <td>{{ usuario.rol }}</td>
+              <td>{% if usuario.activo %}activo{% else %}inactivo{% endif %}</td>
+              <td>
+                <div class="table-actions">
+                  <a class="admin-link" href="{{ url_for('admin_usuarios', edit=usuario._id) }}">Editar</a>
+                  <form method="post" class="inline-form">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="document_id" value="{{ usuario._id }}">
+                    <button class="admin-button" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No hay usuarios cargados en la coleccion.</p>
+    {% endif %}
   </div>
+
   <div class="box">
-    <h3>Formulario CRUD</h3>
-    <form>
+    <h3>{% if form_data.document_id %}Editar usuario{% else %}Crear usuario{% endif %}</h3>
+    <form method="post">
+      <input type="hidden" name="document_id" value="{{ form_data.document_id }}">
+
       <label>Nombre</label>
-      <input type="text" placeholder="Nombre del usuario">
+      <input name="nombre" type="text" value="{{ form_data.nombre }}" placeholder="Nombre del usuario">
 
       <label>Correo</label>
-      <input type="email" placeholder="correo@ejemplo.com">
+      <input name="correo" type="email" value="{{ form_data.correo }}" placeholder="correo@ejemplo.com">
+
+      <label>Telefono</label>
+      <input name="telefono" type="text" value="{{ form_data.telefono }}" placeholder="33xxxxxxx">
+
+      <label>Contrasena {% if form_data.document_id %}(solo si deseas cambiarla){% endif %}</label>
+      <input name="password" type="password" placeholder="********">
 
       <label>Rol</label>
-      <select>
-        <option>cliente</option>
-        <option>admin</option>
+      <select name="rol">
+        <option value="cliente" {% if form_data.rol == "cliente" %}selected{% endif %}>cliente</option>
+        <option value="admin" {% if form_data.rol == "admin" %}selected{% endif %}>admin</option>
       </select>
 
       <label>Estado</label>
-      <select>
-        <option>activo</option>
-        <option>inactivo</option>
+      <select name="activo">
+        <option value="true" {% if form_data.activo == "true" %}selected{% endif %}>activo</option>
+        <option value="false" {% if form_data.activo == "false" %}selected{% endif %}>inactivo</option>
       </select>
 
       <div class="actions-inline">
-        <button class="admin-button" type="button">Crear</button>
-        <button class="admin-button" type="button">Actualizar</button>
-        <button class="admin-button" type="button">Eliminar</button>
+        <button class="admin-button" name="action" value="create" type="submit">Crear</button>
+        <button class="admin-button" name="action" value="update" type="submit">Actualizar</button>
+        {% if form_data.document_id %}
+          <a class="button-link" href="{{ url_for('admin_usuarios') }}">Limpiar formulario</a>
+        {% endif %}
       </div>
     </form>
   </div>

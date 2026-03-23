@@ -3,64 +3,95 @@
 <section class="content-grid">
   <div class="box">
     <h2 class="page-title">Gestion de suscripciones</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Usuario</th>
-          <th>Plan</th>
-          <th>Inicio</th>
-          <th>Fin</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>100</td>
-          <td>Demo Usuario</td>
-          <td>Estudiante</td>
-          <td>01/01/2026</td>
-          <td>31/12/2026</td>
-          <td>activa</td>
-        </tr>
-        <tr>
-          <td>101</td>
-          <td>Usuario Norte</td>
-          <td>Basico</td>
-          <td>15/02/2026</td>
-          <td>14/02/2027</td>
-          <td>pendiente</td>
-        </tr>
-      </tbody>
-    </table>
+    {% if db_warning %}
+      <div class="flash flash-error">{{ db_warning }}</div>
+    {% endif %}
+
+    {% if suscripciones %}
+      <table>
+        <thead>
+          <tr>
+            <th>ObjectId</th>
+            <th>Usuario</th>
+            <th>Plan</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for suscripcion in suscripciones %}
+            <tr>
+              <td>{{ suscripcion._id }}</td>
+              <td>{{ suscripcion.usuario_nombre }}</td>
+              <td>{{ suscripcion.plan_nombre }}</td>
+              <td>{{ suscripcion.fecha_inicio }}</td>
+              <td>{{ suscripcion.fecha_fin }}</td>
+              <td>{{ suscripcion.estado }}</td>
+              <td>
+                <div class="table-actions">
+                  <a class="admin-link" href="{{ url_for('admin_suscripciones', edit=suscripcion._id) }}">Editar</a>
+                  <form method="post" class="inline-form">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="document_id" value="{{ suscripcion._id }}">
+                    <button class="admin-button" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No hay suscripciones registradas.</p>
+    {% endif %}
   </div>
+
   <div class="box">
-    <h3>Formulario CRUD</h3>
-    <form>
-      <label>ID de usuario</label>
-      <input type="text" placeholder="1">
+    <h3>{% if form_data.document_id %}Editar suscripcion{% else %}Crear suscripcion{% endif %}</h3>
+    <form method="post">
+      <input type="hidden" name="document_id" value="{{ form_data.document_id }}">
+
+      <label>Usuario</label>
+      <select name="usuario_id">
+        <option value="">Selecciona un usuario</option>
+        {% for usuario in usuarios %}
+          <option value="{{ usuario._id }}" {% if form_data.usuario_id == usuario._id %}selected{% endif %}>
+            {{ usuario.nombre }} - {{ usuario.correo }}
+          </option>
+        {% endfor %}
+      </select>
 
       <label>Plan</label>
-      <select>
-        <option>Basico</option>
-        <option>Estudiante</option>
-        <option>Ilimitado</option>
+      <select name="plan_id">
+        <option value="">Selecciona un plan</option>
+        {% for plan in planes %}
+          <option value="{{ plan._id }}" {% if form_data.plan_id == plan._id %}selected{% endif %}>
+            {{ plan.nombre }} - ${{ plan.precio_anual }}
+          </option>
+        {% endfor %}
       </select>
 
       <label>Fecha de inicio</label>
-      <input type="text" placeholder="2026-01-01">
+      <input name="fecha_inicio" type="date" value="{{ form_data.fecha_inicio }}">
+
+      <label>Fecha de fin</label>
+      <input name="fecha_fin" type="date" value="{{ form_data.fecha_fin }}">
 
       <label>Estado</label>
-      <select>
-        <option>activa</option>
-        <option>pendiente</option>
-        <option>cancelada</option>
+      <select name="estado">
+        <option value="activa" {% if form_data.estado == "activa" %}selected{% endif %}>activa</option>
+        <option value="pendiente" {% if form_data.estado == "pendiente" %}selected{% endif %}>pendiente</option>
+        <option value="cancelada" {% if form_data.estado == "cancelada" %}selected{% endif %}>cancelada</option>
       </select>
 
       <div class="actions-inline">
-        <button class="admin-button" type="button">Crear</button>
-        <button class="admin-button" type="button">Actualizar</button>
-        <button class="admin-button" type="button">Eliminar</button>
+        <button class="admin-button" name="action" value="create" type="submit">Crear</button>
+        <button class="admin-button" name="action" value="update" type="submit">Actualizar</button>
+        {% if form_data.document_id %}
+          <a class="button-link" href="{{ url_for('admin_suscripciones') }}">Limpiar formulario</a>
+        {% endif %}
       </div>
     </form>
   </div>

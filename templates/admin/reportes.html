@@ -2,57 +2,85 @@
 {% block contenido %}
 <section class="box admin-hero">
   <h2 class="page-title">Reportes</h2>
-  <p>Vista administrativa para revisar datos generales del sistema. Sigue siendo estatica, pero ya esta en el area correcta.</p>
+  <p>Consultas basicas calculadas sobre las colecciones de MongoDB.</p>
 </section>
+
+{% if db_warning %}
+  <section class="box warning-box">
+    <strong>Atencion:</strong> {{ db_warning }}
+  </section>
+{% endif %}
 
 <section class="stats-grid">
   <div class="stat-card">
-    <strong>120</strong>
-    Suscripciones nuevas del mes
+    <strong>{{ report_data.suscripciones_mes }}</strong>
+    Suscripciones creadas este mes
   </div>
   <div class="stat-card">
-    <strong>987</strong>
+    <strong>{{ report_data.usuarios_activos }}</strong>
     Usuarios activos
   </div>
   <div class="stat-card">
-    <strong>3.7</strong>
-    Uso promedio diario
+    <strong>{{ report_data.promedio_validaciones }}</strong>
+    Promedio de validaciones por usuario activo
+  </div>
+  <div class="stat-card">
+    <strong>{{ report_data.validaciones_totales }}</strong>
+    Validaciones registradas
   </div>
 </section>
 
 <section class="content-grid">
   <div class="box">
-    <h3>Resumen mensual</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Metrica</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Altas de usuarios</td>
-          <td>85</td>
-        </tr>
-        <tr>
-          <td>Renovaciones</td>
-          <td>64</td>
-        </tr>
-        <tr>
-          <td>Validaciones registradas</td>
-          <td>25,400</td>
-        </tr>
-      </tbody>
-    </table>
+    <h3>Planes con mas suscripciones</h3>
+    {% if report_data.top_planes %}
+      <table>
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in report_data.top_planes %}
+            <tr>
+              <td>{{ item.plan }}</td>
+              <td>{{ item.total }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">Todavia no hay datos suficientes para este reporte.</p>
+    {% endif %}
   </div>
+
   <div class="box">
-    <h3>Uso futuro</h3>
-    <ul>
-      <li>Consulta por rango de fechas.</li>
-      <li>Filtro por plan o por ruta.</li>
-      <li>Exportacion basica de reportes.</li>
-    </ul>
+    <h3>Validaciones recientes</h3>
+    {% if report_data.validaciones_recientes %}
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Identificador</th>
+            <th>Ruta</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in report_data.validaciones_recientes %}
+            <tr>
+              <td>{{ item.fecha_hora }}</td>
+              <td>{{ item.identificador }}</td>
+              <td>{{ item.ruta }}</td>
+              <td>{{ item.resultado }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No hay validaciones recientes para mostrar.</p>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

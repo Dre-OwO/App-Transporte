@@ -2,44 +2,55 @@
 {% block contenido %}
 <section class="box admin-hero">
   <h2 class="page-title">Dashboard administrativo</h2>
-  <p>Vista general del sistema. Sirve como entrada al CRUD de usuarios, planes y suscripciones.</p>
+  <p>Esta vista ya consume MongoDB para mostrar un resumen del sistema y preparar el resto del CRUD.</p>
 </section>
+
+{% if db_warning %}
+  <section class="box warning-box">
+    <strong>Atencion:</strong> {{ db_warning }}
+  </section>
+{% endif %}
 
 <section class="stats-grid">
   <div class="stat-card">
-    <strong>1350</strong>
-    Usuarios registrados
+    <strong>{{ stats.usuarios }}</strong>
+    Usuarios totales
   </div>
   <div class="stat-card">
-    <strong>987</strong>
+    <strong>{{ stats.usuarios_activos }}</strong>
+    Usuarios activos
+  </div>
+  <div class="stat-card">
+    <strong>{{ stats.suscripciones_activas }}</strong>
     Suscripciones activas
   </div>
   <div class="stat-card">
-    <strong>12</strong>
-    Planes cargados
+    <strong>{{ stats.planes }}</strong>
+    Planes registrados
   </div>
   <div class="stat-card">
-    <strong>4120</strong>
-    Validaciones hoy
+    <strong>{{ stats.validaciones_hoy }}</strong>
+    Validaciones de hoy
   </div>
 </section>
 
 <section class="content-grid">
   <div class="box">
-    <h3>Modulos del admin</h3>
+    <h3>Progreso del sistema</h3>
     <ul>
-      <li>Usuarios: alta, consulta, edicion y baja.</li>
-      <li>Planes: alta y mantenimiento de catalogo.</li>
-      <li>Suscripciones: seguimiento de estados y fechas.</li>
-      <li>Reportes: consultas basicas del sistema.</li>
+      <li>MongoDB conectado como base NoSQL.</li>
+      <li>CRUD real para usuarios, planes y suscripciones.</li>
+      <li>Validaciones de viaje registradas en coleccion propia.</li>
+      <li>Reportes basicos calculados sobre datos reales.</li>
     </ul>
   </div>
   <div class="box">
-    <h3>Pendientes tecnicos</h3>
+    <h3>Siguiente parte natural</h3>
     <ul>
-      <li>Conectar autenticacion de administrador.</li>
-      <li>Conectar base de datos con SQLAlchemy.</li>
-      <li>Activar CRUD real en cada modulo.</li>
+      <li>Autenticacion real por roles.</li>
+      <li>Proteccion de rutas admin.</li>
+      <li>Edicion desde modales o JS si hace falta.</li>
+      <li>Filtros y paginacion para tablas grandes.</li>
     </ul>
   </div>
 </section>

@@ -10,7 +10,7 @@
   <header class="site-header">
     <div class="header-row">
       <div>
-        <h1>Sistema de Suscripciones de Transporte</h1>
+        <h1>App Transporte :V</h1>
         <div class="header-note">Area publica para usuarios finales</div>
       </div>
       <a class="admin-link" href="{{ url_for('admin') }}">Ir a administracion</a>
@@ -25,6 +25,15 @@
     </nav>
   </header>
   <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
     {% block contenido %}{% endblock %}
   </main>
 </body>

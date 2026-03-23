@@ -3,27 +3,30 @@
 <section class="content-grid">
   <div class="box">
     <h2 class="page-title">Validar viaje</h2>
-    <form>
-      <label>ID de usuario o tarjeta</label>
-      <input type="text" placeholder="UDG-000123">
+    <form method="post">
+      <label>Correo o ObjectId del usuario</label>
+      <input name="identificador" type="text" value="{{ form_data.identificador }}" placeholder="usuario@correo.com">
 
       <label>Ruta</label>
-      <select>
-        <option>Ruta 622</option>
-        <option>Ruta 380</option>
-        <option>Ruta C98</option>
-      </select>
+      <input name="ruta" type="text" value="{{ form_data.ruta }}" placeholder="Ruta 622">
 
       <label>Estacion o punto</label>
-      <input type="text" placeholder="Terminal Norte">
+      <input name="estacion" type="text" value="{{ form_data.estacion }}" placeholder="Terminal Norte">
 
-      <button type="button">Validar</button>
+      <button type="submit">Registrar validacion</button>
     </form>
   </div>
+
   <div class="box">
-    <h3>Resultado esperado</h3>
-    <p><span class="tag">Simulacion</span></p>
-    <p>La siguiente fase registrara esta validacion en base de datos.</p>
+    <h3>Resultado actual</h3>
+    {% if resultado %}
+      <p><span class="tag">{{ resultado.resultado }}</span></p>
+      <p><strong>Fecha:</strong> {{ resultado.fecha_hora }}</p>
+      <p><strong>Ruta:</strong> {{ resultado.ruta }}</p>
+      <p><strong>Motivo:</strong> {{ resultado.motivo }}</p>
+    {% else %}
+      <p class="empty-state">Todavia no se ha enviado ninguna validacion en esta vista.</p>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

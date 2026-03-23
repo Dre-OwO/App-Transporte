@@ -2,36 +2,116 @@
 {% block contenido %}
 <section class="box">
   <h2 class="page-title">Panel de usuario</h2>
-  <div class="stats-grid">
-    <div class="stat-card">
-      <strong>Activa</strong>
-      Estado de suscripcion
+  <form method="get" class="compact-form">
+    <div>
+      <label>Correo o ObjectId del usuario</label>
+      <input name="identificador" type="text" value="{{ identificador }}" placeholder="usuario@correo.com o 67e0...">
     </div>
-    <div class="stat-card">
-      <strong>31/12/2026</strong>
-      Vencimiento estimado
-    </div>
-    <div class="stat-card">
-      <strong>18</strong>
-      Viajes del mes
-    </div>
-  </div>
+    <button type="submit">Consultar panel</button>
+  </form>
 </section>
 
-<section class="content-grid">
-  <div class="box">
-    <h3>Datos del usuario</h3>
-    <p><strong>Nombre:</strong> Demo Usuario</p>
-    <p><strong>Correo:</strong> demo@correo.com</p>
-    <p><strong>Plan:</strong> Estudiante</p>
-  </div>
-  <div class="box">
-    <h3>Acciones rapidas</h3>
-    <div class="actions-inline">
-      <button type="button">Renovar plan</button>
-      <button type="button">Ver historial</button>
-      <button type="button">Descargar comprobante</button>
+{% if db_warning %}
+  <section class="box warning-box">
+    <strong>Atencion:</strong> {{ db_warning }}
+  </section>
+{% endif %}
+
+{% if resumen %}
+  <section class="stats-grid">
+    <div class="stat-card">
+      <strong>{{ resumen.usuario.nombre }}</strong>
+      Usuario localizado
     </div>
-  </div>
-</section>
+    <div class="stat-card">
+      <strong>{{ resumen.usuario.rol }}</strong>
+      Rol
+    </div>
+    <div class="stat-card">
+      <strong>{% if resumen.suscripcion_actual %}{{ resumen.suscripcion_actual.estado }}{% else %}sin plan{% endif %}</strong>
+      Estado de suscripcion
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="box">
+      <h3>Datos del usuario</h3>
+      <p><strong>Correo:</strong> {{ resumen.usuario.correo }}</p>
+      <p><strong>Telefono:</strong> {{ resumen.usuario.telefono or "Sin telefono" }}</p>
+      <p><strong>Activo:</strong> {% if resumen.usuario.activo %}si{% else %}no{% endif %}</p>
+    </div>
+
+    <div class="box">
+      <h3>Suscripcion actual</h3>
+      {% if resumen.suscripcion_actual %}
+        <p><strong>Plan:</strong> {{ resumen.suscripcion_actual.plan_nombre }}</p>
+        <p><strong>Inicio:</strong> {{ resumen.suscripcion_actual.fecha_inicio }}</p>
+        <p><strong>Fin:</strong> {{ resumen.suscripcion_actual.fecha_fin }}</p>
+        <p><strong>Precio:</strong> ${{ resumen.suscripcion_actual.precio_anual }}</p>
+      {% else %}
+        <p class="empty-state">No hay una suscripcion activa para este usuario.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="box">
+      <h3>Historial de suscripciones</h3>
+      {% if resumen.suscripciones %}
+        <table>
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in resumen.suscripciones %}
+              <tr>
+                <td>{{ item.plan_nombre }}</td>
+                <td>{{ item.fecha_inicio }}</td>
+                <td>{{ item.fecha_fin }}</td>
+                <td>{{ item.estado }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">Todavia no hay suscripciones registradas.</p>
+      {% endif %}
+    </div>
+
+    <div class="box">
+      <h3>Ultimas validaciones</h3>
+      {% if resumen.validaciones %}
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Ruta</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in resumen.validaciones %}
+              <tr>
+                <td>{{ item.fecha_hora }}</td>
+                <td>{{ item.ruta }}</td>
+                <td>{{ item.resultado }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No hay validaciones recientes para este usuario.</p>
+      {% endif %}
+    </div>
+  </section>
+{% else %}
+  <section class="box">
+    <p class="empty-state">Ingresa un correo o ObjectId para consultar un usuario real almacenado en MongoDB.</p>
+  </section>
+{% endif %}
 {% endblock %}
