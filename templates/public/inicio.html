@@ -2,32 +2,32 @@
 {% block contenido %}
 <section class="box hero">
   <h2 class="page-title">Inicio</h2>
-  <p>Aplicacion Flask conectada a una base NoSQL pensada para gestionar usuarios, planes, suscripciones y validaciones de viaje.</p>
-  <p>La administracion ya quedo separada para que el CRUD viva en un area distinta a la vista del usuario.</p>
+  <p>Consulta opciones de suscripcion anual, revisa tu informacion y registra validaciones de viaje desde un solo lugar.</p>
+  <p>La plataforma esta organizada para usuarios y administradores dentro del mismo sistema.</p>
   <div class="actions-inline">
     <a class="public-link" href="{{ url_for('registro') }}">Registrar usuario</a>
     <a class="public-link" href="{{ url_for('planes') }}">Ver planes</a>
-    <a class="admin-link" href="{{ url_for('admin') }}">Abrir backoffice</a>
+    <a class="admin-link" href="{{ url_for('admin') }}">Abrir panel</a>
   </div>
 </section>
 
 <section class="content-grid">
   <div class="box">
-    <h3>Usuario final</h3>
+    <h3>Servicios para usuarios</h3>
     <ul>
-      <li>Registrarse desde la vista publica.</li>
-      <li>Consultar planes vigentes desde MongoDB.</li>
-      <li>Buscar su panel por correo o ObjectId.</li>
-      <li>Registrar validaciones de viaje.</li>
+      <li>Registro de cuenta.</li>
+      <li>Consulta de planes disponibles.</li>
+      <li>Revision de datos y suscripciones.</li>
+      <li>Validacion de viajes.</li>
     </ul>
   </div>
   <div class="box">
-    <h3>Administrador</h3>
+    <h3>Panel de control</h3>
     <ul>
-      <li>CRUD de usuarios.</li>
-      <li>CRUD de planes.</li>
-      <li>CRUD de suscripciones.</li>
-      <li>Reportes basicos y actividad reciente.</li>
+      <li>Gestion de usuarios.</li>
+      <li>Administracion de planes.</li>
+      <li>Control de suscripciones.</li>
+      <li>Revision de actividad reciente.</li>
     </ul>
   </div>
 </section>

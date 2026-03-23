@@ -2,12 +2,12 @@
 {% block contenido %}
 <section class="box admin-hero">
   <h2 class="page-title">Dashboard administrativo</h2>
-  <p>Esta vista ya consume MongoDB para mostrar un resumen del sistema y preparar el resto del CRUD.</p>
+  <p>Resumen general de la operacion y acceso rapido a los modulos principales.</p>
 </section>
 
 {% if db_warning %}
   <section class="box warning-box">
-    <strong>Atencion:</strong> {{ db_warning }}
+    <strong>No fue posible cargar la informacion:</strong> {{ db_warning }}
   </section>
 {% endif %}
 
@@ -36,21 +36,21 @@
 
 <section class="content-grid">
   <div class="box">
-    <h3>Progreso del sistema</h3>
+    <h3>Resumen de gestion</h3>
     <ul>
-      <li>MongoDB conectado como base NoSQL.</li>
-      <li>CRUD real para usuarios, planes y suscripciones.</li>
-      <li>Validaciones de viaje registradas en coleccion propia.</li>
-      <li>Reportes basicos calculados sobre datos reales.</li>
+      <li>Consulta de usuarios registrados.</li>
+      <li>Revision de suscripciones activas.</li>
+      <li>Seguimiento de planes disponibles.</li>
+      <li>Monitoreo de validaciones del dia.</li>
     </ul>
   </div>
   <div class="box">
-    <h3>Siguiente parte natural</h3>
+    <h3>Acciones frecuentes</h3>
     <ul>
-      <li>Autenticacion real por roles.</li>
-      <li>Proteccion de rutas admin.</li>
-      <li>Edicion desde modales o JS si hace falta.</li>
-      <li>Filtros y paginacion para tablas grandes.</li>
+      <li>Alta y edicion de usuarios.</li>
+      <li>Actualizacion de planes.</li>
+      <li>Control de vigencia de suscripciones.</li>
+      <li>Consulta de reportes.</li>
     </ul>
   </div>
 </section>

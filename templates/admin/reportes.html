@@ -2,12 +2,12 @@
 {% block contenido %}
 <section class="box admin-hero">
   <h2 class="page-title">Reportes</h2>
-  <p>Consultas basicas calculadas sobre las colecciones de MongoDB.</p>
+  <p>Resumen de actividad y ocupacion del sistema.</p>
 </section>
 
 {% if db_warning %}
   <section class="box warning-box">
-    <strong>Atencion:</strong> {{ db_warning }}
+    <strong>No fue posible cargar la informacion:</strong> {{ db_warning }}
   </section>
 {% endif %}
 

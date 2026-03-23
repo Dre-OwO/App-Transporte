@@ -232,7 +232,7 @@ def validar_viaje():
         form_data = _validation_form_from_request(request.form)
         try:
             resultado = register_validation(form_data)
-            flash("Validacion registrada en MongoDB.", "success")
+            flash("Validacion registrada correctamente.", "success")
         except DatabaseError as exc:
             flash(str(exc), "error")
 

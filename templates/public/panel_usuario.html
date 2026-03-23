@@ -13,7 +13,7 @@
 
 {% if db_warning %}
   <section class="box warning-box">
-    <strong>Atencion:</strong> {{ db_warning }}
+    <strong>No fue posible cargar la informacion:</strong> {{ db_warning }}
   </section>
 {% endif %}
 
@@ -111,7 +111,7 @@
   </section>
 {% else %}
   <section class="box">
-    <p class="empty-state">Ingresa un correo o ObjectId para consultar un usuario real almacenado en MongoDB.</p>
+    <p class="empty-state">Ingresa tu correo o tu identificador para consultar la informacion de tu cuenta.</p>
   </section>
 {% endif %}
 {% endblock %}
