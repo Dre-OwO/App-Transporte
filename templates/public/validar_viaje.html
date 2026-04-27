@@ -4,8 +4,7 @@
   <div class="box">
     <h2 class="page-title">Validar viaje</h2>
     <form method="post">
-      <label>Correo o ObjectId del usuario</label>
-      <input name="identificador" type="text" value="{{ form_data.identificador }}" placeholder="usuario@correo.com">
+      <p>Validacion para {{ current_user.correo }}.</p>
 
       <label>Ruta</label>
       <input name="ruta" type="text" value="{{ form_data.ruta }}" placeholder="Ruta 622">

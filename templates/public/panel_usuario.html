@@ -2,13 +2,7 @@
 {% block contenido %}
 <section class="box">
   <h2 class="page-title">Panel de usuario</h2>
-  <form method="get" class="compact-form">
-    <div>
-      <label>Correo o ObjectId del usuario</label>
-      <input name="identificador" type="text" value="{{ identificador }}" placeholder="usuario@correo.com o 67e0...">
-    </div>
-    <button type="submit">Consultar panel</button>
-  </form>
+  <p>Informacion asociada a la cuenta {{ current_user.correo }}.</p>
 </section>
 
 {% if db_warning %}
@@ -111,7 +105,7 @@
   </section>
 {% else %}
   <section class="box">
-    <p class="empty-state">Ingresa tu correo o tu identificador para consultar la informacion de tu cuenta.</p>
+    <p class="empty-state">No fue posible cargar la informacion de tu cuenta.</p>
   </section>
 {% endif %}
 {% endblock %}

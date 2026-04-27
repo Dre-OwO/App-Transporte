@@ -3,11 +3,14 @@
 <section class="box hero">
   <h2 class="page-title">Inicio</h2>
   <p>Consulta opciones de suscripcion anual, revisa tu informacion y registra validaciones de viaje desde un solo lugar.</p>
-  <p>La plataforma esta organizada para usuarios y administradores dentro del mismo sistema.</p>
+  <p>Explora los planes disponibles y accede a tu cuenta para gestionar tu suscripcion.</p>
   <div class="actions-inline">
-    <a class="public-link" href="{{ url_for('registro') }}">Registrar usuario</a>
+    {% if current_user %}
+      <a class="public-link" href="{{ url_for('panel_usuario') }}">Ir a mi panel</a>
+    {% else %}
+      <a class="public-link" href="{{ url_for('registro') }}">Registrar usuario</a>
+    {% endif %}
     <a class="public-link" href="{{ url_for('planes') }}">Ver planes</a>
-    <a class="admin-link" href="{{ url_for('admin') }}">Abrir panel</a>
   </div>
 </section>
 
@@ -22,12 +25,12 @@
     </ul>
   </div>
   <div class="box">
-    <h3>Panel de control</h3>
+    <h3>Uso sin cuenta</h3>
     <ul>
-      <li>Gestion de usuarios.</li>
-      <li>Administracion de planes.</li>
-      <li>Control de suscripciones.</li>
-      <li>Revision de actividad reciente.</li>
+      <li>Consulta de informacion general.</li>
+      <li>Revision de planes activos.</li>
+      <li>Creacion de cuenta cuando quieras contratar.</li>
+      <li>Inicio de sesion para consultar movimientos.</li>
     </ul>
   </div>
 </section>

@@ -1,4 +1,5 @@
 import os
+from functools import wraps
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
@@ -220,6 +221,32 @@ def _redirect_to(endpoint, edit_id=""):
     return redirect(url_for(endpoint))
 
 
+def login_required(view_function):
+    @wraps(view_function)
+    def wrapped_view(**kwargs):
+        if not _current_session_user():
+            flash("Inicia sesion para continuar.", "error")
+            return redirect(url_for("login", next=request.path))
+        return view_function(**kwargs)
+
+    return wrapped_view
+
+
+def admin_required(view_function):
+    @wraps(view_function)
+    def wrapped_view(**kwargs):
+        current_user = _current_session_user()
+        if not current_user:
+            flash("Inicia sesion para entrar al panel administrativo.", "error")
+            return redirect(url_for("login", next=request.path))
+        if not current_user["is_admin"]:
+            flash("No tienes permisos para entrar al panel administrativo.", "error")
+            return redirect(url_for("panel_usuario"))
+        return view_function(**kwargs)
+
+    return wrapped_view
+
+
 @app.context_processor
 def inject_current_user():
     return {"current_user": _current_session_user()}
@@ -309,10 +336,9 @@ def registro():
 
 
 @app.route("/panel-usuario")
+@login_required
 def panel_usuario():
-    identificador = request.args.get("identificador", "").strip()
-    if not identificador and session.get("correo"):
-        identificador = session["correo"]
+    identificador = session.get("correo", "")
 
     resumen = None
     db_warning = None
@@ -351,12 +377,15 @@ def planes():
 
 
 @app.route("/validar-viaje", methods=["GET", "POST"])
+@login_required
 def validar_viaje():
     form_data = _blank_validation_form()
+    form_data["identificador"] = session.get("correo", "")
     resultado = None
 
     if request.method == "POST":
         form_data = _validation_form_from_request(request.form)
+        form_data["identificador"] = session.get("correo", "")
         try:
             resultado = register_validation(form_data)
             flash("Validacion registrada correctamente.", "success")
@@ -372,6 +401,7 @@ def validar_viaje():
 
 
 @app.route("/admin")
+@admin_required
 def admin():
     stats = {
         "usuarios": 0,
@@ -391,6 +421,7 @@ def admin():
 
 
 @app.route("/admin/usuarios", methods=["GET", "POST"])
+@admin_required
 def admin_usuarios():
     if request.method == "POST":
         action = request.form.get("action", "")
@@ -441,6 +472,7 @@ def admin_usuarios():
 
 
 @app.route("/admin/planes", methods=["GET", "POST"])
+@admin_required
 def admin_planes():
     if request.method == "POST":
         action = request.form.get("action", "")
@@ -491,6 +523,7 @@ def admin_planes():
 
 
 @app.route("/admin/suscripciones", methods=["GET", "POST"])
+@admin_required
 def admin_suscripciones():
     if request.method == "POST":
         action = request.form.get("action", "")
@@ -552,6 +585,7 @@ def reportes():
 
 
 @app.route("/admin/reportes")
+@admin_required
 def admin_reportes():
     report_data = {
         "suscripciones_mes": 0,

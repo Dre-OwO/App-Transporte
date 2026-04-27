@@ -16,9 +16,6 @@
       <div class="session-box">
         {% if current_user %}
           <span>Hola, {{ current_user.nombre }}</span>
-          {% if current_user.is_admin %}
-            <a class="admin-link" href="{{ url_for('admin') }}">Administracion</a>
-          {% endif %}
           <a class="public-link" href="{{ url_for('logout') }}">Cerrar sesion</a>
         {% else %}
           <a class="public-link" href="{{ url_for('login') }}">Iniciar sesion</a>
