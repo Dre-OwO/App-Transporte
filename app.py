@@ -1,7 +1,7 @@
 import os
 from functools import wraps
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, send_from_directory
 
 from database import (
     DatabaseError,
@@ -34,7 +34,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-
 
 def _blank_user_form():
     return {
@@ -621,6 +620,11 @@ def admin_reportes():
         report_data=report_data,
         db_warning=db_warning,
     )
+
+@app.route("/easter-egg")
+def easter_egg():
+    """Ruta para el Easter Egg oculto"""
+    return render_template("easter-egg.html")
 
 
 if __name__ == "__main__":

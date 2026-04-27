@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>massiosare...</title>
+</head>
+<body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .easter-egg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .close-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .close-button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* Opcional: Botón para volver al inicio también en la izquierda */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='easter_egg.jpeg') }}" 
+         alt="Easter Egg" 
+         class="easter-egg-image">
+    
+    <button class="close-button" onclick="window.close()">Cerrar</button>
+    <button class="back-button" onclick="window.location.href='{{ url_for('inicio') }}'">Volver al inicio</button>
+    
+    <script>
+        // Si window.close() no funciona (por políticas del navegador),
+        // redirigir al inicio como alternativa
+        document.querySelector('.close-button').addEventListener('click', function() {
+            window.location.href = '{{ url_for('inicio') }}';
+        });
+    </script>
+</html>

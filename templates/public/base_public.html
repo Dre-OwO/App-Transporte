@@ -44,5 +44,19 @@
     {% endwith %}
     {% block contenido %}{% endblock %}
   </main>
+  
+  <!-- Botón Easter Egg - fijo en esquina inferior izquierda -->
+  <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
+    <button onclick="window.location.href='{{ url_for('easter_egg') }}'" 
+            style="padding: 10px 20px; 
+                   background-color: #4CAF50; 
+                   color: white; 
+                   border: none; 
+                   cursor: pointer;
+                   font-size: 16px;
+                   border-radius: 5px;">
+      🥚 Easter Egg
+    </button>
+  </div>
 </body>
 </html>
