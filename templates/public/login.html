@@ -1,8 +1,26 @@
 {% extends "public/base_public.html" %}
 {% block contenido %}
-<section class="box">
-  <h2 class="page-title">Login de usuario</h2>
-  <p>Accede a tu cuenta para consultar movimientos, suscripciones y validaciones.</p>
-  <p>Si aun no cuentas con acceso, puedes registrar tu informacion desde la opcion de registro.</p>
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Iniciar sesion</h2>
+    <form method="post">
+      <label>Correo</label>
+      <input name="correo" type="email" value="{{ form_data.correo }}" placeholder="correo@ejemplo.com">
+
+      <label>Contrasena</label>
+      <input name="password" type="password" placeholder="********">
+
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <div class="box">
+    <h3>Acceso a tu cuenta</h3>
+    <p>Usa el correo y la contrasena que registraste para consultar tu informacion.</p>
+    <div class="actions-inline">
+      <a class="button-link" href="{{ url_for('registro') }}">Crear cuenta</a>
+      <a class="button-link" href="{{ url_for('recuperar_contrasena') }}">Olvide mi contrasena</a>
+    </div>
+  </div>
 </section>
 {% endblock %}

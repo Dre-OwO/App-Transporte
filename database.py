@@ -1,7 +1,8 @@
 import os
+import re
 from datetime import date, datetime, time, timedelta
 
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 try:
     from bson import ObjectId
@@ -37,10 +38,25 @@ class NotFoundError(DatabaseError):
 _client = None
 _db = None
 _indexes_ready = False
+_EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def _normalize_email(value):
     return (value or "").strip().lower()
+
+
+def _validate_email(value):
+    email = _normalize_email(value)
+    if not email or not _EMAIL_PATTERN.match(email):
+        raise ValidationError("Ingresa un correo valido.")
+    return email
+
+
+def _validate_password(value):
+    password = (value or "").strip()
+    if len(password) < 6:
+        raise ValidationError("La contrasena debe tener al menos 6 caracteres.")
+    return password
 
 
 def _now():
@@ -50,7 +66,7 @@ def _now():
 def _require_driver():
     if _IMPORT_ERROR is not None:
         raise DatabaseError(
-            "Estas pendejo no instalaste pymondo."
+            "PyMongo no esta instalado en el entorno virtual. Instala dependencias y vuelve a intentar."
         )
 
 
@@ -164,6 +180,11 @@ def _find_user_by_identifier(identifier):
         return db.usuarios.find_one({"correo": _normalize_email(normalized)})
 
 
+def _find_user_by_email(email):
+    db = _get_database()
+    return db.usuarios.find_one({"correo": _validate_email(email)})
+
+
 def _build_subscription_document(payload, current_id=None):
     db = _get_database()
     user_id = _object_id(payload.get("usuario_id"), "usuario")
@@ -225,16 +246,23 @@ def get_user(user_id):
     return _serialize_document(document)
 
 
+def get_user_by_email(email):
+    document = _find_user_by_email(email)
+    if not document:
+        raise NotFoundError("No se encontro una cuenta con ese correo.")
+    return _serialize_document(document)
+
+
 def create_user(payload):
     db = _get_database()
     nombre = (payload.get("nombre") or "").strip()
-    correo = _normalize_email(payload.get("correo"))
+    correo = _validate_email(payload.get("correo"))
     telefono = (payload.get("telefono") or "").strip()
-    password = (payload.get("password") or "").strip()
+    password = _validate_password(payload.get("password"))
     rol = (payload.get("rol") or "cliente").strip().lower()
 
-    if not nombre or not correo:
-        raise ValidationError("Nombre y correo son obligatorios.")
+    if not nombre:
+        raise ValidationError("El nombre es obligatorio.")
     if rol not in {"cliente", "admin"}:
         raise ValidationError("El rol debe ser cliente o admin.")
 
@@ -242,7 +270,7 @@ def create_user(payload):
         "nombre": nombre,
         "correo": correo,
         "telefono": telefono,
-        "password_hash": generate_password_hash(password or "123456"),
+        "password_hash": generate_password_hash(password),
         "rol": rol,
         "activo": _parse_bool(payload.get("activo", True)),
         "created_at": _now(),
@@ -263,13 +291,13 @@ def update_user(user_id, payload):
     db = _get_database()
     user_oid = _object_id(user_id, "usuario")
     nombre = (payload.get("nombre") or "").strip()
-    correo = _normalize_email(payload.get("correo"))
+    correo = _validate_email(payload.get("correo"))
     telefono = (payload.get("telefono") or "").strip()
     rol = (payload.get("rol") or "cliente").strip().lower()
     password = (payload.get("password") or "").strip()
 
-    if not nombre or not correo:
-        raise ValidationError("Nombre y correo son obligatorios.")
+    if not nombre:
+        raise ValidationError("El nombre es obligatorio.")
     if rol not in {"cliente", "admin"}:
         raise ValidationError("El rol debe ser cliente o admin.")
 
@@ -283,7 +311,7 @@ def update_user(user_id, payload):
     }
 
     if password:
-        updates["password_hash"] = generate_password_hash(password)
+        updates["password_hash"] = generate_password_hash(_validate_password(password))
 
     try:
         result = db.usuarios.update_one({"_id": user_oid}, {"$set": updates})
@@ -294,6 +322,46 @@ def update_user(user_id, payload):
 
     if result.matched_count == 0:
         raise NotFoundError("No se encontro el usuario que intentas actualizar.")
+
+
+def authenticate_user(email, password):
+    user = _find_user_by_email(email)
+    if not user:
+        raise ValidationError("Correo o contrasena incorrectos.")
+
+    if not user.get("activo", True):
+        raise ValidationError("Esta cuenta esta desactivada.")
+
+    password_hash = user.get("password_hash", "")
+    if not password_hash or not check_password_hash(password_hash, password or ""):
+        raise ValidationError("Correo o contrasena incorrectos.")
+
+    return _serialize_document(user)
+
+
+def reset_user_password(email, telefono, new_password):
+    db = _get_database()
+    user = _find_user_by_email(email)
+    if not user:
+        raise ValidationError("No se encontro una cuenta con esos datos.")
+
+    saved_phone = (user.get("telefono") or "").strip()
+    submitted_phone = (telefono or "").strip()
+    if not saved_phone or saved_phone != submitted_phone:
+        raise ValidationError("No se encontro una cuenta con esos datos.")
+
+    result = db.usuarios.update_one(
+        {"_id": user["_id"]},
+        {
+            "$set": {
+                "password_hash": generate_password_hash(_validate_password(new_password)),
+                "updated_at": _now(),
+            }
+        },
+    )
+
+    if result.matched_count == 0:
+        raise NotFoundError("No se pudo actualizar la contrasena.")
 
 
 def delete_user(user_id):

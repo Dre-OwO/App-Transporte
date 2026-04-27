@@ -1,9 +1,10 @@
 import os
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 
 from database import (
     DatabaseError,
+    authenticate_user,
     create_plan,
     create_subscription,
     create_user,
@@ -21,6 +22,7 @@ from database import (
     list_users,
     lookup_user_panel,
     register_validation,
+    reset_user_password,
     update_plan,
     update_subscription,
     update_user,
@@ -40,6 +42,51 @@ def _blank_user_form():
         "rol": "cliente",
         "activo": "true",
     }
+
+
+def _blank_login_form():
+    return {"correo": "", "password": ""}
+
+
+def _login_form_from_request(form):
+    return {
+        "correo": form.get("correo", "").strip(),
+        "password": form.get("password", "").strip(),
+    }
+
+
+def _blank_recovery_form():
+    return {
+        "correo": "",
+        "telefono": "",
+        "password": "",
+        "password_confirm": "",
+    }
+
+
+def _recovery_form_from_request(form):
+    return {
+        "correo": form.get("correo", "").strip(),
+        "telefono": form.get("telefono", "").strip(),
+        "password": form.get("password", "").strip(),
+        "password_confirm": form.get("password_confirm", "").strip(),
+    }
+
+
+def _start_session(user):
+    session.clear()
+    session["user_id"] = user["_id"]
+    session["nombre"] = user["nombre"]
+    session["rol"] = user["rol"]
+
+
+def _redirect_after_login(user):
+    next_page = request.args.get("next", "").strip()
+    if next_page.startswith("/") and not next_page.startswith("//"):
+        return redirect(next_page)
+    if user.get("rol") == "admin":
+        return redirect(url_for("admin"))
+    return redirect(url_for("panel_usuario", identificador=user["correo"]))
 
 
 def _user_form_from_request(form):
@@ -165,7 +212,52 @@ def inicio():
 
 @app.route("/login")
 def login():
-    return render_template("public/login.html", titulo="Login")
+    return render_template("public/login.html", titulo="Login", form_data=_blank_login_form())
+
+
+@app.route("/login", methods=["POST"])
+def login_post():
+    form_data = _login_form_from_request(request.form)
+
+    try:
+        user = authenticate_user(form_data["correo"], form_data["password"])
+        _start_session(user)
+        flash(f"Bienvenido, {user['nombre']}.", "success")
+        return _redirect_after_login(user)
+    except DatabaseError as exc:
+        flash(str(exc), "error")
+
+    return render_template("public/login.html", titulo="Login", form_data=form_data)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Sesion cerrada correctamente.", "success")
+    return redirect(url_for("inicio"))
+
+
+@app.route("/recuperar-contrasena", methods=["GET", "POST"])
+def recuperar_contrasena():
+    form_data = _blank_recovery_form()
+
+    if request.method == "POST":
+        form_data = _recovery_form_from_request(request.form)
+        if form_data["password"] != form_data["password_confirm"]:
+            flash("La confirmacion de contrasena no coincide.", "error")
+        else:
+            try:
+                reset_user_password(form_data["correo"], form_data["telefono"], form_data["password"])
+                flash("Contrasena actualizada. Ya puedes iniciar sesion.", "success")
+                return redirect(url_for("login"))
+            except DatabaseError as exc:
+                flash(str(exc), "error")
+
+    return render_template(
+        "public/recuperar_contrasena.html",
+        titulo="Recuperar contrasena",
+        form_data=form_data,
+    )
 
 
 @app.route("/registro", methods=["GET", "POST"])
@@ -175,9 +267,16 @@ def registro():
     if request.method == "POST":
         form_data = _user_form_from_request(request.form)
         try:
-            create_user({**form_data, "rol": "cliente", "activo": "true"})
-            flash("Usuario registrado correctamente. Ya puedes usar el correo para consultar tu panel.", "success")
-            return redirect(url_for("registro"))
+            user_id = create_user({**form_data, "rol": "cliente", "activo": "true"})
+            user = {
+                "_id": user_id,
+                "nombre": form_data["nombre"],
+                "correo": form_data["correo"].strip().lower(),
+                "rol": "cliente",
+            }
+            _start_session(user)
+            flash("Cuenta creada correctamente. Bienvenido.", "success")
+            return redirect(url_for("panel_usuario", identificador=user["correo"]))
         except DatabaseError as exc:
             flash(str(exc), "error")
 

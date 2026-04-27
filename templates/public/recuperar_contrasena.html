@@ -1,0 +1,29 @@
+{% extends "public/base_public.html" %}
+{% block contenido %}
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Recuperar contrasena</h2>
+    <form method="post">
+      <label>Correo</label>
+      <input name="correo" type="email" value="{{ form_data.correo }}" placeholder="correo@ejemplo.com">
+
+      <label>Telefono registrado</label>
+      <input name="telefono" type="text" value="{{ form_data.telefono }}" placeholder="33xxxxxxx">
+
+      <label>Nueva contrasena</label>
+      <input name="password" type="password" placeholder="********">
+
+      <label>Confirmar nueva contrasena</label>
+      <input name="password_confirm" type="password" placeholder="********">
+
+      <button type="submit">Cambiar contrasena</button>
+    </form>
+  </div>
+
+  <div class="box">
+    <h3>Verificacion</h3>
+    <p>Para cambiar la contrasena se revisa que el correo y telefono coincidan con una cuenta existente.</p>
+    <a class="button-link" href="{{ url_for('login') }}">Volver a iniciar sesion</a>
+  </div>
+</section>
+{% endblock %}
