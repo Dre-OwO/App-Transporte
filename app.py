@@ -30,6 +30,8 @@ from database import (
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 
 def _blank_user_form():
@@ -77,7 +79,20 @@ def _start_session(user):
     session.clear()
     session["user_id"] = user["_id"]
     session["nombre"] = user["nombre"]
+    session["correo"] = user.get("correo", "")
     session["rol"] = user["rol"]
+
+
+def _current_session_user():
+    if not session.get("user_id"):
+        return None
+    return {
+        "id": session.get("user_id"),
+        "nombre": session.get("nombre", ""),
+        "correo": session.get("correo", ""),
+        "rol": session.get("rol", ""),
+        "is_admin": session.get("rol") == "admin",
+    }
 
 
 def _redirect_after_login(user):
@@ -205,6 +220,11 @@ def _redirect_to(endpoint, edit_id=""):
     return redirect(url_for(endpoint))
 
 
+@app.context_processor
+def inject_current_user():
+    return {"current_user": _current_session_user()}
+
+
 @app.route("/")
 def inicio():
     return render_template("public/inicio.html", titulo="Inicio")
@@ -212,6 +232,11 @@ def inicio():
 
 @app.route("/login")
 def login():
+    current_user = _current_session_user()
+    if current_user:
+        if current_user["is_admin"]:
+            return redirect(url_for("admin"))
+        return redirect(url_for("panel_usuario"))
     return render_template("public/login.html", titulo="Login", form_data=_blank_login_form())
 
 
@@ -286,6 +311,9 @@ def registro():
 @app.route("/panel-usuario")
 def panel_usuario():
     identificador = request.args.get("identificador", "").strip()
+    if not identificador and session.get("correo"):
+        identificador = session["correo"]
+
     resumen = None
     db_warning = None
 

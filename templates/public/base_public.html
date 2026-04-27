@@ -13,15 +13,26 @@
         <h1>App Transporte</h1>
         <div class="header-note">Consulta tus planes, movimientos y viajes</div>
       </div>
-      <a class="admin-link" href="{{ url_for('admin') }}">Ir a administracion</a>
+      <div class="session-box">
+        {% if current_user %}
+          <span>Hola, {{ current_user.nombre }}</span>
+          {% if current_user.is_admin %}
+            <a class="admin-link" href="{{ url_for('admin') }}">Administracion</a>
+          {% endif %}
+          <a class="public-link" href="{{ url_for('logout') }}">Cerrar sesion</a>
+        {% else %}
+          <a class="public-link" href="{{ url_for('login') }}">Iniciar sesion</a>
+        {% endif %}
+      </div>
     </div>
     <nav class="nav">
       <a href="{{ url_for('inicio') }}">Inicio</a>
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('registro') }}">Registro</a>
       <a href="{{ url_for('planes') }}">Planes</a>
       <a href="{{ url_for('panel_usuario') }}">Mi panel</a>
       <a href="{{ url_for('validar_viaje') }}">Validar viaje</a>
+      {% if not current_user %}
+        <a href="{{ url_for('registro') }}">Registro</a>
+      {% endif %}
     </nav>
   </header>
   <main>

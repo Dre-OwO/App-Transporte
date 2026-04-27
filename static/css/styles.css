@@ -71,6 +71,19 @@ a {
   color: rgba(255, 255, 255, 0.82);
 }
 
+.session-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.session-box span {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .flash-stack {
   display: grid;
   gap: 10px;

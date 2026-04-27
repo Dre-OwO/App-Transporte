@@ -13,7 +13,13 @@
         <h1>Panel administrativo</h1>
         <div class="header-note">Gestion general de usuarios, planes y suscripciones</div>
       </div>
-      <a class="public-link" href="{{ url_for('inicio') }}">Volver al sitio publico</a>
+      <div class="session-box">
+        {% if current_user %}
+          <span>{{ current_user.nombre }}</span>
+          <a class="public-link" href="{{ url_for('logout') }}">Cerrar sesion</a>
+        {% endif %}
+        <a class="public-link" href="{{ url_for('inicio') }}">Volver al sitio publico</a>
+      </div>
     </div>
     <nav class="nav">
       <a href="{{ url_for('admin') }}">Dashboard</a>
