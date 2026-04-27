@@ -5,7 +5,7 @@ Aplicacion Flask para gestionar suscripciones de transporte publico con MongoDB.
 ## 1. Preparar entorno Python
 
 ```bash
-cd "/Users/dre/Documents/Personal/Uni/Calidad de software"
+cd "put your path here cawn"
 python3 -m venv app_transporte
 source app_transporte/bin/activate
 pip install -r requirements.txt
@@ -55,12 +55,3 @@ Abrir en navegador:
 http://127.0.0.1:5000
 ```
 
-## 6. Flujo para presentacion
-
-1. Entrar a `/planes` sin sesion para mostrar que se pueden ver planes.
-2. Crear una cuenta desde `/registro`; al terminar se inicia sesion automaticamente.
-3. Volver a `/planes` y elegir un plan con `Suscribirme`.
-4. Revisar la suscripcion en `/panel-usuario`.
-5. Cerrar sesion.
-6. Entrar a `/login` con el administrador creado por script.
-7. Abrir `/admin` manualmente para mostrar dashboard y modulos administrativos.
