@@ -14,6 +14,7 @@
           <th>Precio anual</th>
           <th>Limite diario</th>
           <th>Descripcion</th>
+          <th>Accion</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,15 @@
             <td>${{ plan.precio_anual }}</td>
             <td>{{ plan.limite_viajes_diarios }} viajes</td>
             <td>{{ plan.descripcion or "Sin descripcion" }}</td>
+            <td>
+              {% if current_user %}
+                <form method="post" action="{{ url_for('suscribirse', plan_id=plan._id) }}" class="inline-form">
+                  <button type="submit">Suscribirme</button>
+                </form>
+              {% else %}
+                <a class="button-link" href="{{ url_for('login', next=url_for('planes')) }}">Iniciar sesion</a>
+              {% endif %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

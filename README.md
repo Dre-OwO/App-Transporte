@@ -1,25 +1,66 @@
 # App-Transporte
 
-Aplicacion Flask para gestionar suscripciones de transporte publico.
+Aplicacion Flask para gestionar suscripciones de transporte publico con MongoDB.
 
-## Dependencias
+## 1. Preparar entorno Python
 
 ```bash
+cd "/Users/dre/Documents/Personal/Uni/Calidad de software"
+python3 -m venv app_transporte
 source app_transporte/bin/activate
 pip install -r requirements.txt
 ```
 
-## MongoDB
+## 2. Iniciar MongoDB
 
-La app usa MongoDB con estas variables opcionales:
+En macOS con Homebrew:
+
+```bash
+brew services start mongodb-community@8.0
+brew services list | grep mongodb
+```
+
+Para comprobar conexion:
+
+```bash
+mongosh "mongodb://localhost:27017/"
+```
+
+## 3. Configurar variables
 
 ```bash
 export MONGO_URI="mongodb://localhost:27017/"
 export MONGO_DB_NAME="app_transporte"
 ```
 
-## Ejecutar
+## 4. Crear primer administrador
+
+Con MongoDB encendido y el entorno virtual activo:
+
+```bash
+python3 scripts/create_admin.py
+```
+
+El script pide nombre, correo, telefono y contrasena. Si ya existe un administrador activo, pregunta antes de crear otro.
+
+## 5. Ejecutar aplicacion
 
 ```bash
 python3 app.py
 ```
+
+Abrir en navegador:
+
+```text
+http://127.0.0.1:5000
+```
+
+## 6. Flujo para presentacion
+
+1. Entrar a `/planes` sin sesion para mostrar que se pueden ver planes.
+2. Crear una cuenta desde `/registro`; al terminar se inicia sesion automaticamente.
+3. Volver a `/planes` y elegir un plan con `Suscribirme`.
+4. Revisar la suscripcion en `/panel-usuario`.
+5. Cerrar sesion.
+6. Entrar a `/login` con el administrador creado por script.
+7. Abrir `/admin` manualmente para mostrar dashboard y modulos administrativos.

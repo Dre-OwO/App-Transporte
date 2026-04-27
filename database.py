@@ -232,6 +232,43 @@ def _build_subscription_document(payload, current_id=None):
     }
 
 
+def _build_user_subscription_document(user_id, plan_id):
+    db = _get_database()
+    user_oid = _object_id(user_id, "usuario")
+    plan_oid = _object_id(plan_id, "plan")
+
+    usuario = db.usuarios.find_one({"_id": user_oid})
+    if not usuario:
+        raise ValidationError("No se encontro la cuenta del usuario.")
+
+    plan = db.planes.find_one({"_id": plan_oid})
+    if not plan:
+        raise ValidationError("No se encontro el plan seleccionado.")
+    if not plan.get("activo", True):
+        raise ValidationError("El plan seleccionado no esta disponible.")
+
+    active_subscription = db.suscripciones.find_one({"usuario_id": user_oid, "estado": "activa"})
+    if active_subscription:
+        raise ValidationError("Ya tienes una suscripcion activa.")
+
+    fecha_inicio = date.today()
+    fecha_fin = fecha_inicio + timedelta(days=365)
+
+    return {
+        "usuario_id": user_oid,
+        "usuario_nombre": usuario["nombre"],
+        "usuario_correo": usuario["correo"],
+        "plan_id": plan_oid,
+        "plan_nombre": plan["nombre"],
+        "precio_anual": plan["precio_anual"],
+        "fecha_inicio": _date_to_datetime(fecha_inicio),
+        "fecha_fin": _date_to_datetime(fecha_fin),
+        "estado": "activa",
+        "created_at": _now(),
+        "updated_at": _now(),
+    }
+
+
 def list_users():
     db = _get_database()
     documents = db.usuarios.find().sort("created_at", -1)
@@ -251,6 +288,11 @@ def get_user_by_email(email):
     if not document:
         raise NotFoundError("No se encontro una cuenta con ese correo.")
     return _serialize_document(document)
+
+
+def count_admin_users():
+    db = _get_database()
+    return db.usuarios.count_documents({"rol": "admin", "activo": True})
 
 
 def create_user(payload):
@@ -491,6 +533,18 @@ def create_subscription(payload):
         result = db.suscripciones.insert_one(document)
     except PyMongoError as exc:
         raise DatabaseError("No se pudo guardar la suscripcion en MongoDB.") from exc
+
+    return str(result.inserted_id)
+
+
+def create_subscription_for_user(user_id, plan_id):
+    db = _get_database()
+    document = _build_user_subscription_document(user_id, plan_id)
+
+    try:
+        result = db.suscripciones.insert_one(document)
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo crear la suscripcion.") from exc
 
     return str(result.inserted_id)
 

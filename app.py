@@ -8,6 +8,7 @@ from database import (
     authenticate_user,
     create_plan,
     create_subscription,
+    create_subscription_for_user,
     create_user,
     delete_plan,
     delete_subscription,
@@ -374,6 +375,18 @@ def planes():
         planes=planes_disponibles,
         db_warning=db_warning,
     )
+
+
+@app.route("/suscribirse/<plan_id>", methods=["POST"])
+@login_required
+def suscribirse(plan_id):
+    try:
+        create_subscription_for_user(session["user_id"], plan_id)
+        flash("Suscripcion creada correctamente.", "success")
+        return redirect(url_for("panel_usuario"))
+    except DatabaseError as exc:
+        flash(str(exc), "error")
+        return redirect(url_for("planes"))
 
 
 @app.route("/validar-viaje", methods=["GET", "POST"])
