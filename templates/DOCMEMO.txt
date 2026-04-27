@@ -1,0 +1,149 @@
+1. Objetivos
+Este documento básicamente explica que ocupa nuestro proyecto App-Transporte para instalarse, correr y no andar fallando a la primera. La idea es dejar claro, sin tanto rollo, que requerimientos técnicos tiene, como se configura, que usuarios lo usan y qué hacer si algo se rompe o no carga bien.
+
+1.1 Objetivos Específicos
+Objetivo 1. Explicar los requerimientos mínimos de hardware y software para ejecutar la aplicación.
+Objetivo 2. Documentar el proceso de instalación y configuración del sistema en un ambiente local.
+Objetivo 3. Identificar los tipos de usuarios, sus permisos y las contingencias más comunes con su solución.
+
+2. Alcance
+Este documento está dirigido a los integrantes del equipo, al profesor y a cualquier persona que quiera revisar o levantar el proyecto en modo local.
+Conocimientos básicos en uso de terminal, Python, Flask, MongoDB, HTML/CSS y navegación web.
+En pocas palabras, está hecho para alguien que mínimo ubique como correr un proyecto sencillo y mover tantito a una app web.
+Conocimientos básicos en uso de terminal, Python, Flask, MongoDB, HTML/CSS y navegación web.
+En pocas palabras, está hecho para alguien que mínimo ubique como correr un proyecto sencillo y mover tantito a una app web.
+
+3. Requerimientos Tecnicos
+Nuestro sistema es una aplicación web hecha con Flask y conectada a MongoDB, entonces no pide una máquina exagerada, pero si necesita que el entorno esté bien instalado para que funcione sin dramas.
+
+3.1 Requerimientos Mínimos de Hardware
+Procesador: Intel Core i3, AMD Ryzen 3 o equivalente
+Memoria RAM mínimo: 4 GB
+Disco duro: 1 GB libre como mínimo
+
+3.2 Requerimientos Mínimos de Software
+Privilegios de administrador: No para usar la app normalmente, pero Si para instalar Python o MongoDB si el equipo no los tiene
+Sistema operativo: Windows 10 o superior, mac OSX 12 o superior, o Linux actual
+Software adicional: Python 3, pip y MongoDB local
+
+4. Herramientas Utilizadas para el Desarrollo
+Herramienta 1: Python 3
+Descripción: Lenguaje principal del proyecto.
+Motivo de uso: Nos sirvió para desarrollar toda la lógica del backend de forma rápida y sencilla.
+
+Herramienta 2: Flask 3.1.0
+Descripción: Framework web ligero para manejar rutas, vistas y formularios.
+Motivo de uso: Porque es simple, fácil de entender y suficiente para un proyecto universitario como este.
+
+Herramienta 3: MongoDB
+Descripción: Base de datos NoSQL usada para guardar usuarios, planes, suscripciones y validaciones.
+Motivo de uso: Porque maneja documentos de forma flexible y no nos obliga a armar un esquema super rígido desde el inicio.
+
+Herramienta 4: PyMongo 4.11.3
+Descripción: Librería que conecta Python con MongoDB.
+Motivo de uso: Es la forma directa de hacer operaciones CRUD desde Flask hacia la base de datos.
+
+Herramienta 5: HTML y CSS
+Descripción: Tecnologías usadas para la parte visual del sistema.
+Motivo de uso: Nos permitieron construir las vistas públicas y administrativas de manera clara y funcional.
+
+5. Instalación
+Descargar o clonar el proyecto en una carpeta local.
+Abrir una terminal dentro de la carpeta del proyecto.
+Activar el entorno virtual con el comando: source app transporte/bin/activate
+Instalar dependencias con: pip install -r requirements.txt
+Verificar que MongoDB esté encendido en el equipo.
+Si se quiere, configurar variables de entorno como MONGO _URI, MONGO DB_NAME y SECRET_KEY.
+Ejecutar la aplicacion con: python3 app.py
+Abrir el navegador en: http://127.0.0.1:5000/
+Recomendaciones:
+
+Levantar primero MongoDB, porque si no la app abre pero no carga datos.
+Usar el entorno virtual para no mezclar librerías con otros proyectos.
+Si piden capturas, las más útiles serán una de la terminal ejecutando Flash y otra del navegador mostrando la página principal.
+6. Configuración
+La configuración actual del sistema es sencilla y muy de desarrollo local, o sea, todo medio directo pero funcional.
+
+Configuración 1: SECRET_KEY
+Sirve para manejar sesiones y mensajes flash en Flask.
+Si no se configura, la app usa una llave por defecto de desarrollo.
+
+Configuracion 2: MONGO_URI
+Sirve para indicar la dirección de conexión a MongoDB.
+Por defecto usa: mongodb://localhost:27017/
+
+Configuración 3: MONGO_DB_NAME
+Sirve para definir el nombre de la base de datos que usará la aplicación.
+Por defecto usa: app transporte
+
+Configuración 4: modo debug
+La app corre con debug=True, lo cual ayuda en desarrollo porque muestra errores y recarga cambios automáticamente.
+Obviamente eso es para pruebas, no para producción.
+
+Configuración 5: módulos administrativos
+Desde la parte administrativa se pueden gestionar usuarios, planes y suscripciones.
+Esto sirve para cargar información de prueba y revisar que los CRUD si están jalando.
+
+7. Diseño de la Arquitectura Física
+Como el proyecto está en etapa de desarrollo/pruebas, la arquitectura física es super simple y corre casi todo en la misma máquina.
+
+Nombre de los equipos: Equipo de desarrollo local y servicio MongoDB local
+Ubicación física dentro del centro de cómputo y sitio alterno: Equipo personal del desarrollador; no hay sitio alterno formal definido
+Direcciones IP asignadas: 127.0.0.1 / localhost
+Puertos TCP o UDP necesarios: TCP 5000 para Flask y TCP 27017 para MongoDB
+Dependencias con otros sistemas: Python 3, Flask, MongoDB, PyMongo y navegador web
+
+8. Usuarios
+El sistema maneja usuarios técnicos y usuarios funcionales. Ahorita todo está pensado para correr en local, así que varias cosas están simplificadas.
+
+8.1 Usuarios de Base de Datos
+Nombre del usuario: app_transporte_app
+Descripción o propósito: Usuario técnico sugerido para que la aplicación se conecte a MongoDB. En la versión actual local, la conexión está pensada sin autenticación formal.
+Grupos a los que pertenece: No aplica en local; en un escenario formal sería un usuario de la BD app transporte
+Privilegios generales: Lectura y escritura sobre la base de datos del proyecto
+Privilegios sobre objetos: Acceso a colecciones como usuarios, planes, suscripciones y validaciones
+
+8.2 Usuarios de Sistemas Operativos
+Nombre del usuario indicando dominio: Usuario local del equipo de desarrollo
+Descripción o propósito: Usuario que instala dependencias, levanta MongoDB y ejecuta Flask.
+Grupos a los que pertenece: Usuario estándar del sistema; administrador solo si se necesita instalar software
+Privilegios sobre carpetas: Lectura y escritura sobre la carpeta del proyecto y el entorno virtual
+
+8.3 Usuarios de Aplicaciones
+Nombre del usuario: Administrador
+Descripción o propósito: Usuario que entra al módulo administrativo para gestionar información del sistema.
+Grupos a los que pertenece: admin
+Privilegios dentro de la aplicacion: Alta, edición y eliminación de usuarios, planes y suscripciones; consulta de dashboard y reportes
+
+Nombre del usuario: Cliente
+Descripción o propósito: Usuario final del sistema que consulta su panel, revisa su suscripción y valida viajes.
+Grupos a los que pertenece: cliente
+Privilegios dentro de la aplicación: Registro, consulta de panel personal, consulta de planes y validación de viaje
+
+
+
+9. Contingencias y Soluciones
+Contingencia 1:
+ La app abre pero no muestra datos.
+Solución: Revisar si MongoDB está encendido y si MONGOURI apunta a la dirección correcta.
+
+Contingencia 2: 
+Sale error porque falta una librería como Flash o PyMongo.
+Solucion: Activar el entorno virtual y correr pip install -r requirements.txt
+.
+
+Contingencia 4: 
+No se puede conectar a la base de datos.
+Solución: Verificar que MongoDB esté instalado, corriendo y que el nombre de la base de datos esté bien escrito.
+
+Contingencia 5: 
+Se intenta registrar un correo repetido o un plan con nombre duplicado.
+Solución: Cambiar el dato repetido, porque la base ya tiene índices únicos para evitar duplicados.
+
+Contingencia 6:
+ El panel de usuario no encuentra información al poner un identificador válido.
+Solución: Probar con un correo correcto o con un Object Id valido existente en la base.
+
+Contingencia 7:
+ El módulo admin se usa como si ya fuera producción.
+Solución: No hacerlo así nomás. Ahorita está pensado para desarrollo y pruebas, entonces si algun dia se publica de verdad, primero habria que meter autenticación real y asegurar accesos
