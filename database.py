@@ -92,6 +92,8 @@ def _get_database():
         try:
             _db.usuarios.create_index([("correo", ASCENDING)], unique=True)
             _db.planes.create_index([("nombre", ASCENDING)], unique=True)
+            _db.estaciones.create_index([("nombre", ASCENDING)], unique=True)
+            _db.estaciones.create_index([("codigo", ASCENDING)], unique=True, sparse=True)
             _db.suscripciones.create_index([("usuario_id", ASCENDING), ("estado", ASCENDING)])
             _db.validaciones.create_index([("usuario_id", ASCENDING), ("fecha_hora", ASCENDING)])
         except PyMongoError as exc:
@@ -112,6 +114,10 @@ def _object_id(value, field_name="id"):
 
 def _parse_bool(value):
     return str(value).strip().lower() in {"1", "true", "si", "activo", "on", "yes"}
+
+
+def _normalize_station_code(value):
+    return (value or "").strip().upper()
 
 
 def _parse_float(value, field_name):
@@ -508,6 +514,105 @@ def delete_plan(plan_id):
 
     if result.deleted_count == 0:
         raise NotFoundError("No se encontro el plan que intentas eliminar.")
+
+
+def list_stations():
+    db = _get_database()
+    documents = db.estaciones.find().sort("nombre", 1)
+    return [_serialize_document(document) for document in documents]
+
+
+def list_active_stations():
+    db = _get_database()
+    documents = db.estaciones.find({"activo": True}).sort("nombre", 1)
+    return [_serialize_document(document) for document in documents]
+
+
+def get_station(station_id):
+    db = _get_database()
+    document = db.estaciones.find_one({"_id": _object_id(station_id, "estacion")})
+    if not document:
+        raise NotFoundError("No se encontro la estacion solicitada.")
+    return _serialize_document(document)
+
+
+def create_station(payload):
+    db = _get_database()
+    nombre = (payload.get("nombre") or "").strip()
+    codigo = _normalize_station_code(payload.get("codigo"))
+    descripcion = (payload.get("descripcion") or "").strip()
+
+    if not nombre:
+        raise ValidationError("El nombre de la estacion es obligatorio.")
+
+    document = {
+        "nombre": nombre,
+        "descripcion": descripcion,
+        "activo": _parse_bool(payload.get("activo", True)),
+        "created_at": _now(),
+        "updated_at": _now(),
+    }
+
+    if codigo:
+        document["codigo"] = codigo
+
+    try:
+        result = db.estaciones.insert_one(document)
+    except DuplicateKeyError as exc:
+        raise DuplicateRecordError("Ya existe una estacion registrada con ese nombre o codigo.") from exc
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo guardar la estacion en MongoDB.") from exc
+
+    return str(result.inserted_id)
+
+
+def update_station(station_id, payload):
+    db = _get_database()
+    station_oid = _object_id(station_id, "estacion")
+    nombre = (payload.get("nombre") or "").strip()
+    codigo = _normalize_station_code(payload.get("codigo"))
+
+    if not nombre:
+        raise ValidationError("El nombre de la estacion es obligatorio.")
+
+    updates = {
+        "nombre": nombre,
+        "descripcion": (payload.get("descripcion") or "").strip(),
+        "activo": _parse_bool(payload.get("activo", True)),
+        "updated_at": _now(),
+    }
+
+    update_operation = {"$set": updates}
+    if codigo:
+        updates["codigo"] = codigo
+    else:
+        update_operation["$unset"] = {"codigo": ""}
+
+    try:
+        result = db.estaciones.update_one({"_id": station_oid}, update_operation)
+    except DuplicateKeyError as exc:
+        raise DuplicateRecordError("Ya existe una estacion registrada con ese nombre o codigo.") from exc
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo actualizar la estacion.") from exc
+
+    if result.matched_count == 0:
+        raise NotFoundError("No se encontro la estacion que intentas actualizar.")
+
+
+def delete_station(station_id):
+    db = _get_database()
+    station_oid = _object_id(station_id, "estacion")
+
+    if db.rutas.find_one({"estaciones": station_oid}):
+        raise ValidationError("No puedes eliminar una estacion asociada a una ruta.")
+
+    try:
+        result = db.estaciones.delete_one({"_id": station_oid})
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo eliminar la estacion.") from exc
+
+    if result.deleted_count == 0:
+        raise NotFoundError("No se encontro la estacion que intentas eliminar.")
 
 
 def list_subscriptions():
