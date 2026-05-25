@@ -94,6 +94,8 @@ def _get_database():
             _db.planes.create_index([("nombre", ASCENDING)], unique=True)
             _db.estaciones.create_index([("nombre", ASCENDING)], unique=True)
             _db.estaciones.create_index([("codigo", ASCENDING)], unique=True, sparse=True)
+            _db.rutas.create_index([("nombre", ASCENDING)], unique=True)
+            _db.rutas.create_index([("estaciones", ASCENDING)])
             _db.suscripciones.create_index([("usuario_id", ASCENDING), ("estado", ASCENDING)])
             _db.validaciones.create_index([("usuario_id", ASCENDING), ("fecha_hora", ASCENDING)])
         except PyMongoError as exc:
@@ -613,6 +615,142 @@ def delete_station(station_id):
 
     if result.deleted_count == 0:
         raise NotFoundError("No se encontro la estacion que intentas eliminar.")
+
+
+def _station_ids_from_payload(payload):
+    if hasattr(payload, "getlist"):
+        raw_values = payload.getlist("estaciones")
+    else:
+        raw_values = payload.get("estaciones", [])
+
+    if isinstance(raw_values, str):
+        raw_values = raw_values.split(",")
+    elif raw_values is None:
+        raw_values = []
+    elif not isinstance(raw_values, (list, tuple, set)):
+        raw_values = [raw_values]
+
+    station_ids = []
+    seen = set()
+    for value in raw_values:
+        normalized = str(value or "").strip()
+        if not normalized or normalized in seen:
+            continue
+        station_ids.append(_object_id(normalized, "estacion"))
+        seen.add(normalized)
+
+    if not station_ids:
+        raise ValidationError("Selecciona al menos una estacion para la ruta.")
+
+    return station_ids
+
+
+def _route_station_documents(db, station_ids, require_all=True):
+    documents = list(db.estaciones.find({"_id": {"$in": station_ids}}))
+    documents_by_id = {str(document["_id"]): document for document in documents}
+
+    if require_all and len(documents_by_id) != len(station_ids):
+        raise ValidationError("Una o mas estaciones seleccionadas no existen.")
+
+    return [documents_by_id[str(station_id)] for station_id in station_ids if str(station_id) in documents_by_id]
+
+
+def _serialize_route_document(document):
+    if not document:
+        return None
+
+    db = _get_database()
+    serialized = _serialize_document(document)
+    station_ids = document.get("estaciones", [])
+    station_documents = _route_station_documents(db, station_ids, require_all=False) if station_ids else []
+    serialized["estaciones_detalle"] = [_serialize_document(station) for station in station_documents]
+    return serialized
+
+
+def _build_route_document(payload):
+    db = _get_database()
+    nombre = (payload.get("nombre") or "").strip()
+    descripcion = (payload.get("descripcion") or "").strip()
+    station_ids = _station_ids_from_payload(payload)
+    _route_station_documents(db, station_ids)
+
+    if not nombre:
+        raise ValidationError("El nombre de la ruta es obligatorio.")
+
+    return {
+        "nombre": nombre,
+        "descripcion": descripcion,
+        "estaciones": station_ids,
+        "activo": _parse_bool(payload.get("activo", True)),
+        "updated_at": _now(),
+    }
+
+
+def list_routes():
+    db = _get_database()
+    documents = db.rutas.find().sort("nombre", 1)
+    return [_serialize_route_document(document) for document in documents]
+
+
+def list_active_routes():
+    db = _get_database()
+    documents = db.rutas.find({"activo": True}).sort("nombre", 1)
+    return [_serialize_route_document(document) for document in documents]
+
+
+def get_route(route_id):
+    db = _get_database()
+    document = db.rutas.find_one({"_id": _object_id(route_id, "ruta")})
+    if not document:
+        raise NotFoundError("No se encontro la ruta solicitada.")
+    return _serialize_route_document(document)
+
+
+def create_route(payload):
+    db = _get_database()
+    document = _build_route_document(payload)
+    document["created_at"] = _now()
+
+    try:
+        result = db.rutas.insert_one(document)
+    except DuplicateKeyError as exc:
+        raise DuplicateRecordError("Ya existe una ruta registrada con ese nombre.") from exc
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo guardar la ruta en MongoDB.") from exc
+
+    return str(result.inserted_id)
+
+
+def update_route(route_id, payload):
+    db = _get_database()
+    route_oid = _object_id(route_id, "ruta")
+    updates = _build_route_document(payload)
+
+    try:
+        result = db.rutas.update_one({"_id": route_oid}, {"$set": updates})
+    except DuplicateKeyError as exc:
+        raise DuplicateRecordError("Ya existe una ruta registrada con ese nombre.") from exc
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo actualizar la ruta.") from exc
+
+    if result.matched_count == 0:
+        raise NotFoundError("No se encontro la ruta que intentas actualizar.")
+
+
+def delete_route(route_id):
+    db = _get_database()
+    route_oid = _object_id(route_id, "ruta")
+
+    if db.validaciones.find_one({"ruta_id": route_oid}):
+        raise ValidationError("No puedes eliminar una ruta que ya tiene validaciones asociadas.")
+
+    try:
+        result = db.rutas.delete_one({"_id": route_oid})
+    except PyMongoError as exc:
+        raise DatabaseError("No se pudo eliminar la ruta.") from exc
+
+    if result.deleted_count == 0:
+        raise NotFoundError("No se encontro la ruta que intentas eliminar.")
 
 
 def list_subscriptions():
