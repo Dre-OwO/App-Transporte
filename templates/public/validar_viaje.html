@@ -3,16 +3,44 @@
 <section class="content-grid">
   <div class="box">
     <h2 class="page-title">Validar viaje</h2>
+    {% if db_warning %}
+      <div class="flash flash-error">{{ db_warning }}</div>
+    {% endif %}
+
     <form method="post">
       <p>Validacion para {{ current_user.correo }}.</p>
 
       <label>Ruta</label>
-      <input name="ruta" type="text" value="{{ form_data.ruta }}" placeholder="Ruta 622">
+      <select name="ruta_id">
+        <option value="">Selecciona una ruta</option>
+        {% for ruta in rutas %}
+          <option value="{{ ruta._id }}" {% if form_data.ruta_id == ruta._id %}selected{% endif %}>
+            {{ ruta.nombre }}
+          </option>
+        {% endfor %}
+      </select>
 
-      <label>Estacion o punto</label>
-      <input name="estacion" type="text" value="{{ form_data.estacion }}" placeholder="Terminal Norte">
+      <label>Estacion</label>
+      <select name="estacion_id">
+        <option value="">Selecciona una estacion</option>
+        {% for ruta in rutas %}
+          {% if ruta.estaciones_detalle %}
+            <optgroup label="{{ ruta.nombre }}">
+              {% for estacion in ruta.estaciones_detalle %}
+                <option value="{{ estacion._id }}" {% if form_data.estacion_id == estacion._id %}selected{% endif %}>
+                  {{ estacion.nombre }}{% if estacion.codigo %} ({{ estacion.codigo }}){% endif %}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endif %}
+        {% endfor %}
+      </select>
 
-      <button type="submit">Registrar validacion</button>
+      {% if rutas %}
+        <button type="submit">Registrar validacion</button>
+      {% else %}
+        <p class="empty-state">No hay rutas activas disponibles para validar viajes.</p>
+      {% endif %}
     </form>
   </div>
 
@@ -22,6 +50,7 @@
       <p><span class="tag">{{ resultado.resultado }}</span></p>
       <p><strong>Fecha:</strong> {{ resultado.fecha_hora }}</p>
       <p><strong>Ruta:</strong> {{ resultado.ruta }}</p>
+      <p><strong>Estacion:</strong> {{ resultado.estacion or "Sin estacion" }}</p>
       <p><strong>Motivo:</strong> {{ resultado.motivo }}</p>
     {% else %}
       <p class="empty-state">Completa el formulario para revisar el resultado de la validacion.</p>

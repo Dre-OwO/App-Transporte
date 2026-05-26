@@ -233,6 +233,7 @@ def _build_subscription_document(payload, current_id=None):
         "plan_id": plan_id,
         "plan_nombre": plan["nombre"],
         "precio_anual": plan["precio_anual"],
+        "limite_viajes_diarios": plan["limite_viajes_diarios"],
         "fecha_inicio": _date_to_datetime(fecha_inicio),
         "fecha_fin": _date_to_datetime(fecha_fin),
         "estado": estado,
@@ -269,6 +270,7 @@ def _build_user_subscription_document(user_id, plan_id):
         "plan_id": plan_oid,
         "plan_nombre": plan["nombre"],
         "precio_anual": plan["precio_anual"],
+        "limite_viajes_diarios": plan["limite_viajes_diarios"],
         "fecha_inicio": _date_to_datetime(fecha_inicio),
         "fecha_fin": _date_to_datetime(fecha_fin),
         "estado": "activa",
@@ -848,6 +850,30 @@ def register_validation(payload):
     identificador = (payload.get("identificador") or "").strip()
     ruta = (payload.get("ruta") or "").strip()
     estacion = (payload.get("estacion") or "").strip()
+    route_id_raw = (payload.get("ruta_id") or "").strip()
+    station_id_raw = (payload.get("estacion_id") or "").strip()
+
+    if route_id_raw:
+        route_oid = _object_id(route_id_raw, "ruta")
+        route = db.rutas.find_one({"_id": route_oid, "activo": True})
+        if not route:
+            raise ValidationError("La ruta seleccionada no existe o esta inactiva.")
+
+        if not station_id_raw:
+            raise ValidationError("Selecciona una estacion para validar el viaje.")
+
+        station_oid = _object_id(station_id_raw, "estacion")
+        station = db.estaciones.find_one({"_id": station_oid, "activo": True})
+        if not station:
+            raise ValidationError("La estacion seleccionada no existe o esta inactiva.")
+        if station_oid not in route.get("estaciones", []):
+            raise ValidationError("La estacion seleccionada no pertenece a la ruta.")
+
+        ruta = route["nombre"]
+        estacion = station["nombre"]
+    else:
+        route_oid = None
+        station_oid = None
 
     if not identificador or not ruta:
         raise ValidationError("Identificador y ruta son obligatorios para validar un viaje.")
@@ -867,8 +893,29 @@ def register_validation(payload):
             sort=[("fecha_fin", -1)],
         )
         if suscripcion:
-            resultado = "aceptada"
-            motivo = "Suscripcion activa encontrada."
+            limite_diario = suscripcion.get("limite_viajes_diarios")
+            if limite_diario is None:
+                plan = db.planes.find_one({"_id": suscripcion.get("plan_id")})
+                limite_diario = plan.get("limite_viajes_diarios") if plan else None
+
+            if limite_diario is None:
+                resultado = "aceptada"
+                motivo = "Suscripcion activa encontrada."
+            else:
+                start_of_day = datetime.combine(date.today(), time.min)
+                end_of_day = start_of_day + timedelta(days=1)
+                viajes_hoy = db.validaciones.count_documents(
+                    {
+                        "usuario_id": usuario["_id"],
+                        "resultado": "aceptada",
+                        "fecha_hora": {"$gte": start_of_day, "$lt": end_of_day},
+                    }
+                )
+                if viajes_hoy >= int(limite_diario):
+                    motivo = f"Limite diario de {limite_diario} viajes alcanzado."
+                else:
+                    resultado = "aceptada"
+                    motivo = f"Suscripcion activa encontrada. Viaje {viajes_hoy + 1} de {limite_diario} permitido hoy."
         else:
             motivo = "El usuario existe pero no tiene una suscripcion activa."
 
@@ -877,6 +924,8 @@ def register_validation(payload):
         "usuario_id": usuario["_id"] if usuario else None,
         "usuario_nombre": usuario.get("nombre") if usuario else None,
         "suscripcion_id": suscripcion["_id"] if suscripcion else None,
+        "ruta_id": route_oid,
+        "estacion_id": station_oid,
         "ruta": ruta,
         "estacion": estacion,
         "resultado": resultado,

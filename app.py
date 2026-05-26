@@ -25,6 +25,7 @@ from database import (
     get_subscription,
     get_user,
     list_all_plans,
+    list_active_routes,
     list_public_plans,
     list_routes,
     list_stations,
@@ -280,7 +281,7 @@ def _subscription_form_from_document(document):
 
 
 def _blank_validation_form():
-    return {"identificador": "", "ruta": "", "estacion": ""}
+    return {"identificador": "", "ruta": "", "estacion": "", "ruta_id": "", "estacion_id": ""}
 
 
 def _validation_form_from_request(form):
@@ -288,6 +289,8 @@ def _validation_form_from_request(form):
         "identificador": form.get("identificador", "").strip(),
         "ruta": form.get("ruta", "").strip(),
         "estacion": form.get("estacion", "").strip(),
+        "ruta_id": form.get("ruta_id", "").strip(),
+        "estacion_id": form.get("estacion_id", "").strip(),
     }
 
 
@@ -470,6 +473,8 @@ def validar_viaje():
     form_data = _blank_validation_form()
     form_data["identificador"] = session.get("correo", "")
     resultado = None
+    rutas = []
+    db_warning = None
 
     if request.method == "POST":
         form_data = _validation_form_from_request(request.form)
@@ -480,11 +485,18 @@ def validar_viaje():
         except DatabaseError as exc:
             flash(str(exc), "error")
 
+    try:
+        rutas = list_active_routes()
+    except DatabaseError as exc:
+        db_warning = str(exc)
+
     return render_template(
         "public/validar_viaje.html",
         titulo="Validar Viaje",
         form_data=form_data,
         resultado=resultado,
+        rutas=rutas,
+        db_warning=db_warning,
     )
 
 
