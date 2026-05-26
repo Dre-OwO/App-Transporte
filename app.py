@@ -7,25 +7,35 @@ from database import (
     DatabaseError,
     authenticate_user,
     create_plan,
+    create_route,
+    create_station,
     create_subscription,
     create_subscription_for_user,
     create_user,
     delete_plan,
+    delete_route,
+    delete_station,
     delete_subscription,
     delete_user,
     get_dashboard_stats,
     get_plan,
     get_report_data,
+    get_route,
+    get_station,
     get_subscription,
     get_user,
     list_all_plans,
     list_public_plans,
+    list_routes,
+    list_stations,
     list_subscriptions,
     list_users,
     lookup_user_panel,
     register_validation,
     reset_user_password,
     update_plan,
+    update_route,
+    update_station,
     update_subscription,
     update_user,
 )
@@ -161,6 +171,72 @@ def _plan_form_from_document(document):
             "descripcion": document.get("descripcion", ""),
             "precio_anual": document.get("precio_anual", ""),
             "limite_viajes_diarios": document.get("limite_viajes_diarios", ""),
+            "activo": "true" if document.get("activo", True) else "false",
+        }
+    )
+    return form_data
+
+
+def _blank_station_form():
+    return {
+        "document_id": "",
+        "nombre": "",
+        "codigo": "",
+        "descripcion": "",
+        "activo": "true",
+    }
+
+
+def _station_form_from_request(form):
+    return {
+        "nombre": form.get("nombre", "").strip(),
+        "codigo": form.get("codigo", "").strip(),
+        "descripcion": form.get("descripcion", "").strip(),
+        "activo": form.get("activo", "true"),
+    }
+
+
+def _station_form_from_document(document):
+    form_data = _blank_station_form()
+    form_data.update(
+        {
+            "document_id": document.get("_id", ""),
+            "nombre": document.get("nombre", ""),
+            "codigo": document.get("codigo", ""),
+            "descripcion": document.get("descripcion", ""),
+            "activo": "true" if document.get("activo", True) else "false",
+        }
+    )
+    return form_data
+
+
+def _blank_route_form():
+    return {
+        "document_id": "",
+        "nombre": "",
+        "descripcion": "",
+        "estaciones": [],
+        "activo": "true",
+    }
+
+
+def _route_form_from_request(form):
+    return {
+        "nombre": form.get("nombre", "").strip(),
+        "descripcion": form.get("descripcion", "").strip(),
+        "estaciones": form.getlist("estaciones"),
+        "activo": form.get("activo", "true"),
+    }
+
+
+def _route_form_from_document(document):
+    form_data = _blank_route_form()
+    form_data.update(
+        {
+            "document_id": document.get("_id", ""),
+            "nombre": document.get("nombre", ""),
+            "descripcion": document.get("descripcion", ""),
+            "estaciones": document.get("estaciones", []),
             "activo": "true" if document.get("activo", True) else "false",
         }
     )
@@ -529,6 +605,111 @@ def admin_planes():
         "admin/planes.html",
         titulo="Admin Planes",
         planes=planes_registrados,
+        form_data=form_data,
+        db_warning=db_warning,
+    )
+
+
+@app.route("/admin/estaciones", methods=["GET", "POST"])
+@admin_required
+def admin_estaciones():
+    if request.method == "POST":
+        action = request.form.get("action", "")
+        document_id = request.form.get("document_id", "").strip()
+        payload = _station_form_from_request(request.form)
+
+        try:
+            if action == "create":
+                create_station(payload)
+                flash("Estacion creada correctamente.", "success")
+                return redirect(url_for("admin_estaciones"))
+            if action == "update":
+                update_station(document_id, payload)
+                flash("Estacion actualizada correctamente.", "success")
+                return _redirect_to("admin_estaciones", document_id)
+            if action == "delete":
+                delete_station(document_id)
+                flash("Estacion eliminada correctamente.", "success")
+                return redirect(url_for("admin_estaciones"))
+            flash("Accion invalida para estaciones.", "error")
+        except DatabaseError as exc:
+            flash(str(exc), "error")
+            return _redirect_to("admin_estaciones", document_id if action == "update" else "")
+
+    form_data = _blank_station_form()
+    db_warning = None
+    edit_id = request.args.get("edit", "").strip()
+
+    if edit_id:
+        try:
+            form_data = _station_form_from_document(get_station(edit_id))
+        except DatabaseError as exc:
+            flash(str(exc), "error")
+
+    try:
+        estaciones = list_stations()
+    except DatabaseError as exc:
+        estaciones = []
+        db_warning = str(exc)
+
+    return render_template(
+        "admin/estaciones.html",
+        titulo="Admin Estaciones",
+        estaciones=estaciones,
+        form_data=form_data,
+        db_warning=db_warning,
+    )
+
+
+@app.route("/admin/rutas", methods=["GET", "POST"])
+@admin_required
+def admin_rutas():
+    if request.method == "POST":
+        action = request.form.get("action", "")
+        document_id = request.form.get("document_id", "").strip()
+        payload = _route_form_from_request(request.form)
+
+        try:
+            if action == "create":
+                create_route(payload)
+                flash("Ruta creada correctamente.", "success")
+                return redirect(url_for("admin_rutas"))
+            if action == "update":
+                update_route(document_id, payload)
+                flash("Ruta actualizada correctamente.", "success")
+                return _redirect_to("admin_rutas", document_id)
+            if action == "delete":
+                delete_route(document_id)
+                flash("Ruta eliminada correctamente.", "success")
+                return redirect(url_for("admin_rutas"))
+            flash("Accion invalida para rutas.", "error")
+        except DatabaseError as exc:
+            flash(str(exc), "error")
+            return _redirect_to("admin_rutas", document_id if action == "update" else "")
+
+    form_data = _blank_route_form()
+    db_warning = None
+    edit_id = request.args.get("edit", "").strip()
+
+    if edit_id:
+        try:
+            form_data = _route_form_from_document(get_route(edit_id))
+        except DatabaseError as exc:
+            flash(str(exc), "error")
+
+    try:
+        rutas = list_routes()
+        estaciones = list_stations()
+    except DatabaseError as exc:
+        rutas = []
+        estaciones = []
+        db_warning = str(exc)
+
+    return render_template(
+        "admin/rutas.html",
+        titulo="Admin Rutas",
+        rutas=rutas,
+        estaciones=estaciones,
         form_data=form_data,
         db_warning=db_warning,
     )

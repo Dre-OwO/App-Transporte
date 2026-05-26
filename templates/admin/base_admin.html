@@ -11,7 +11,7 @@
     <div class="header-row">
       <div>
         <h1>Panel administrativo</h1>
-        <div class="header-note">Gestion general de usuarios, planes y suscripciones</div>
+        <div class="header-note">Gestion general de usuarios, planes, estaciones, rutas y suscripciones</div>
       </div>
       <div class="session-box">
         {% if current_user %}
@@ -25,6 +25,8 @@
       <a href="{{ url_for('admin') }}">Dashboard</a>
       <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
       <a href="{{ url_for('admin_planes') }}">Planes</a>
+      <a href="{{ url_for('admin_estaciones') }}">Estaciones</a>
+      <a href="{{ url_for('admin_rutas') }}">Rutas</a>
       <a href="{{ url_for('admin_suscripciones') }}">Suscripciones</a>
       <a href="{{ url_for('admin_reportes') }}">Reportes</a>
     </nav>

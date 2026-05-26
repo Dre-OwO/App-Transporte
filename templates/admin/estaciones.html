@@ -1,0 +1,79 @@
+{% extends "admin/base_admin.html" %}
+{% block contenido %}
+<section class="content-grid">
+  <div class="box">
+    <h2 class="page-title">Gestion de estaciones</h2>
+    {% if db_warning %}
+      <div class="flash flash-error">{{ db_warning }}</div>
+    {% endif %}
+
+    {% if estaciones %}
+      <table>
+        <thead>
+          <tr>
+            <th>ObjectId</th>
+            <th>Estacion</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for estacion in estaciones %}
+            <tr>
+              <td>{{ estacion._id }}</td>
+              <td>{{ estacion.nombre }}</td>
+              <td>{{ estacion.codigo or "Sin codigo" }}</td>
+              <td>{{ estacion.descripcion or "Sin descripcion" }}</td>
+              <td>{% if estacion.activo %}activo{% else %}inactivo{% endif %}</td>
+              <td>
+                <div class="table-actions">
+                  <a class="admin-link" href="{{ url_for('admin_estaciones', edit=estacion._id) }}">Editar</a>
+                  <form method="post" class="inline-form">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="document_id" value="{{ estacion._id }}">
+                    <button class="admin-button" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No hay estaciones registradas.</p>
+    {% endif %}
+  </div>
+
+  <div class="box">
+    <h3>{% if form_data.document_id %}Editar estacion{% else %}Crear estacion{% endif %}</h3>
+    <form method="post">
+      <input type="hidden" name="document_id" value="{{ form_data.document_id }}">
+
+      <label>Nombre de la estacion</label>
+      <input name="nombre" type="text" value="{{ form_data.nombre }}" placeholder="Terminal Norte">
+
+      <label>Codigo</label>
+      <input name="codigo" type="text" value="{{ form_data.codigo }}" placeholder="TN-01">
+
+      <label>Descripcion</label>
+      <textarea name="descripcion" placeholder="Descripcion corta de la estacion">{{ form_data.descripcion }}</textarea>
+
+      <label>Estado</label>
+      <select name="activo">
+        <option value="true" {% if form_data.activo == "true" %}selected{% endif %}>activo</option>
+        <option value="false" {% if form_data.activo == "false" %}selected{% endif %}>inactivo</option>
+      </select>
+
+      <div class="actions-inline">
+        <button class="admin-button" name="action" value="create" type="submit">Crear</button>
+        <button class="admin-button" name="action" value="update" type="submit">Actualizar</button>
+        {% if form_data.document_id %}
+          <a class="button-link" href="{{ url_for('admin_estaciones') }}">Limpiar formulario</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
